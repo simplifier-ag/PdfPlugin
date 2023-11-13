@@ -1,0 +1,22 @@
+deployment/assets/*.jar
+.bsp
+.idea/
+target/
+lib_managed/
+src_managed/
+*.iml
+.classpath_nb
+*~
+atlassian-ide-plugin.xml
+temp/
+tmp/
+project/project/
+templates/
+
+# eclipse
+.classpath
+.settings/
+.project
+.cache-tests
+.cache-main
+bin/

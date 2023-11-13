@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div>The preview may differ from the actual PDF. Please use the download to get the actual result</div><br>
+<a id="download-link" download="file.pdf" href="">Download</a><br>
+<canvas id="the-canvas" style="border:1px  solid black"></canvas>
+
+<script src="/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.combined.js"></script>
+
+<script id="script">
+
+    window.addEventListener('message', function(event) {
+        var link = document.getElementById("download-link");
+        link.href = "data:application/octet-stream;base64," + event.data;
+
+        var pdfData = atob(event.data);
+        var loadingTask = PDFJS.getDocument({ data: pdfData });
+        loadingTask.promise.then(function(pdf) {
+            pdf.getPage(1).then(function(page) {
+                var scale = 1;
+                var viewport = page.getViewport(scale);
+                var canvas = document.getElementById('the-canvas');
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>

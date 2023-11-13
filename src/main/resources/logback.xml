@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <appender name="TIME_BASED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${APPENDER_DIR:-.}/${LOGFILE_BASENAME:-pdfPlugin}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${APPENDER_DIR:-.}/pdfPlugin/${LOGFILE_BASENAME:-pdfPlugin}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] %logger{0}: %m%n%rEx{full,
+                java.lang.reflect.Method,
+                akka.http.scaladsl,
+                akka.stream.impl.fusing,
+                scala.concurrent.forkjoin,
+                akka.dispatch.Mailbox,
+                akka.actor,
+                sun.reflect,
+                net.sf.cglib,
+                ByCGLIB
+                }</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] %logger{0}: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="akka" level="INFO" />
+    <logger name="com.ning.http" level="INFO" />
+    <logger name="org.fusesource.scalate" level="INFO" />
+    <logger name="org.fusesource.scalate.util.ClassPathBuilder" level="ERROR" />
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="TIME_BASED_FILE"/>
+    </root>
+
+    <include optional="true" file="${LOGBACK_CONFIG_ROOT:-.}/logback-local-pdf.include.xml" />
+
+</configuration>

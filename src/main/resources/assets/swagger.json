@@ -1,0 +1,845 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0",
+    "termsOfService" : ""
+  },
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "Administration"
+  }, {
+    "name" : "Creation"
+  }, {
+    "name" : "Generation"
+  }, {
+    "name" : "Permission file"
+  } ],
+  "schemes" : [ "http", "https" ],
+  "paths" : {
+    "/client/2.0/pluginSlot/pdfPlugin/adminTemplateEdit" : {
+      "post" : {
+        "tags" : [ "Administration" ],
+        "summary" : "Edit an already existing template.",
+        "description" : "",
+        "operationId" : "editTemplate",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/EditTemplateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Response"
+            }
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/adminTemplateFetch" : {
+      "post" : {
+        "tags" : [ "Administration" ],
+        "summary" : "Get an already existing template.",
+        "description" : "",
+        "operationId" : "fetchTemplate",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/FetchTemplateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/FetchTemplateResponse"
+            }
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/adminTemplateList" : {
+      "post" : {
+        "tags" : [ "Administration" ],
+        "summary" : "List all existing templates.",
+        "description" : "",
+        "operationId" : "listTemplates",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ListTemplatesResponse"
+            }
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/adminTemplateAdd" : {
+      "post" : {
+        "tags" : [ "Administration" ],
+        "summary" : "Add a new template. This template can be used to generate pdf file layouts.",
+        "description" : "",
+        "operationId" : "addTemplate",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/HttpParamTemplateAdd"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Response"
+            }
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/adminTemplateDelete" : {
+      "post" : {
+        "tags" : [ "Administration" ],
+        "summary" : "Delete a template.",
+        "description" : "",
+        "operationId" : "deleteTemplate",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/DeleteTemplateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Response"
+            }
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/createPdfWithContent" : {
+      "post" : {
+        "tags" : [ "Creation" ],
+        "summary" : "Generate pdf from file of content repo",
+        "description" : "",
+        "operationId" : "startPdfCreationWithContent",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/CreatePdfRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TemplateOperationResult"
+            }
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/generatePdfToContentRepo" : {
+      "post" : {
+        "tags" : [ "Generation" ],
+        "summary" : "Generate pdf to content repo",
+        "description" : "",
+        "operationId" : "startPdfToContentRepoGeneration",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GeneratePdfToContentRepoRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SuccessfulWithValue"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/generatePdfFromHtml" : {
+      "post" : {
+        "tags" : [ "Generation" ],
+        "summary" : "Generate pdf from html",
+        "description" : "",
+        "operationId" : "startPdfFromHtmlGeneration",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GeneratePdfFromHtmlRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/FutureSuccessfulWithValue"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/generatePdf" : {
+      "post" : {
+        "tags" : [ "Generation" ],
+        "summary" : "Generate a pdf",
+        "description" : "",
+        "operationId" : "startPdfGeneration",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GeneratePdfRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/GeneratePdfResponse"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/pdfPlugin/generatePdfFromTemplate" : {
+      "post" : {
+        "tags" : [ "Generation" ],
+        "summary" : "Generate pdf from html template",
+        "description" : "The template can be created through Plugin settings.",
+        "operationId" : "startPdfFromTemplateGeneration",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GeneratePdfFromTemplateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SuccessfulWithValue"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/uploadPermissionFile" : {
+      "post" : {
+        "tags" : [ "Permission file" ],
+        "summary" : "Upload the permission file.",
+        "description" : "",
+        "operationId" : "uploadPermissionFile",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PluginPermissionFile"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UploadPermissionFileResponse"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    },
+    "/client/2.0/pluginSlot/downloadPermissionFile" : {
+      "post" : {
+        "tags" : [ "Permission file" ],
+        "summary" : "Download the permission file.",
+        "description" : "",
+        "operationId" : "downloadPermissionFile",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DownloadPermissionFileRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/DownloadPermissionFileResponse"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        },
+        "security" : [ {
+          "basicAuth" : [ ]
+        } ]
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "basicAuth" : {
+      "type" : "basic"
+    }
+  },
+  "definitions" : {
+    "Response" : {
+      "type" : "object",
+      "required" : [ "message", "success" ],
+      "properties" : {
+        "message" : {
+          "$ref" : "#/definitions/RestMessage"
+        },
+        "success" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "RestMessage" : {
+      "type" : "object",
+      "properties" : {
+        "msgType" : {
+          "type" : "string",
+          "description" : "the response message type"
+        },
+        "msgText" : {
+          "type" : "string",
+          "description" : "the response message text"
+        }
+      }
+    },
+    "EditTemplateRequest" : {
+      "type" : "object",
+      "required" : [ "data", "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "string"
+        },
+        "header" : {
+          "type" : "string"
+        },
+        "footer" : {
+          "type" : "string"
+        },
+        "stylesheet" : {
+          "type" : "string"
+        },
+        "previewJson" : {
+          "type" : "string"
+        }
+      }
+    },
+    "EncodedTemplateContentData" : {
+      "type" : "object",
+      "required" : [ "previewJson", "stylesheet", "template" ],
+      "properties" : {
+        "template" : {
+          "type" : "string"
+        },
+        "header" : {
+          "type" : "string"
+        },
+        "footer" : {
+          "type" : "string"
+        },
+        "stylesheet" : {
+          "type" : "string"
+        },
+        "previewJson" : {
+          "type" : "string"
+        }
+      }
+    },
+    "FetchTemplateResponse" : {
+      "type" : "object",
+      "required" : [ "message", "success", "template" ],
+      "properties" : {
+        "template" : {
+          "$ref" : "#/definitions/EncodedTemplateContentData"
+        },
+        "message" : {
+          "$ref" : "#/definitions/RestMessage"
+        },
+        "success" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "FetchTemplateRequest" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ListTemplatesResponse" : {
+      "type" : "object",
+      "required" : [ "message", "success", "templates" ],
+      "properties" : {
+        "templates" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "message" : {
+          "$ref" : "#/definitions/RestMessage"
+        },
+        "success" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "HttpParamTemplateAdd" : {
+      "type" : "object",
+      "required" : [ "data", "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "string"
+        },
+        "header" : {
+          "type" : "string"
+        },
+        "footer" : {
+          "type" : "string"
+        },
+        "stylesheet" : {
+          "type" : "string"
+        },
+        "previewJson" : {
+          "type" : "string"
+        }
+      }
+    },
+    "DeleteTemplateRequest" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TemplateOperationResult" : {
+      "type" : "object"
+    },
+    "CreatePdfRequest" : {
+      "type" : "object",
+      "required" : [ "sessions" ],
+      "properties" : {
+        "sessions" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "config" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SuccessfulWithValue" : {
+      "type" : "object",
+      "required" : [ "value" ],
+      "properties" : {
+        "value" : {
+          "type" : "object"
+        }
+      }
+    },
+    "ContentFileInfo" : {
+      "type" : "object",
+      "required" : [ "fileName", "folderId", "permissionObjectId", "permissionObjectType", "securitySchemeId" ],
+      "properties" : {
+        "fileId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "folderId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "fileName" : {
+          "type" : "string"
+        },
+        "fileDescription" : {
+          "type" : "string"
+        },
+        "securitySchemeId" : {
+          "type" : "string"
+        },
+        "permissionObjectType" : {
+          "type" : "string"
+        },
+        "permissionObjectId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "GeneratePdfToContentRepoRequest" : {
+      "type" : "object",
+      "required" : [ "contentFileInfo", "session", "templateName" ],
+      "properties" : {
+        "templateName" : {
+          "type" : "string"
+        },
+        "session" : {
+          "type" : "string"
+        },
+        "config" : {
+          "type" : "string"
+        },
+        "contentFileInfo" : {
+          "$ref" : "#/definitions/ContentFileInfo"
+        }
+      }
+    },
+    "Future" : {
+      "type" : "object",
+      "required" : [ "completed" ],
+      "properties" : {
+        "completed" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "FutureSuccessfulWithValue" : {
+      "type" : "object",
+      "required" : [ "completed" ],
+      "properties" : {
+        "completed" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "GeneratePdfFromHtmlRequest" : {
+      "type" : "object",
+      "required" : [ "htmlString" ],
+      "properties" : {
+        "htmlString" : {
+          "type" : "string"
+        },
+        "config" : {
+          "type" : "string"
+        }
+      }
+    },
+    "GeneratePdfResponse" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "description" : "the job id",
+          "$ref" : "#/definitions/StartGenerationResult"
+        },
+        "message" : {
+          "description" : "the return message",
+          "$ref" : "#/definitions/RestMessage"
+        },
+        "success" : {
+          "type" : "boolean",
+          "description" : "the flag if request was successful"
+        }
+      }
+    },
+    "StartGenerationResult" : {
+      "type" : "object",
+      "properties" : {
+        "jobId" : {
+          "type" : "string",
+          "description" : "the content repo file id"
+        }
+      }
+    },
+    "GeneratePdfRequest" : {
+      "type" : "object",
+      "properties" : {
+        "session" : {
+          "type" : "string",
+          "description" : "the session id of a file stored by content repo plugin"
+        },
+        "template" : {
+          "type" : "string",
+          "description" : "the name of a template created through plugin settings"
+        },
+        "config" : {
+          "type" : "string",
+          "description" : "the config as text for library 'wkhtmltopdf'"
+        }
+      }
+    },
+    "GeneratePdfFromTemplateRequest" : {
+      "type" : "object",
+      "required" : [ "replacements", "templateName" ],
+      "properties" : {
+        "templateName" : {
+          "type" : "string"
+        },
+        "replacements" : {
+          "$ref" : "#/definitions/JObject"
+        },
+        "config" : {
+          "type" : "string"
+        }
+      }
+    },
+    "JField" : {
+      "type" : "object",
+      "required" : [ "name", "value" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "value" : {
+          "$ref" : "#/definitions/JValue"
+        }
+      }
+    },
+    "JObject" : {
+      "type" : "object",
+      "required" : [ "obj" ],
+      "properties" : {
+        "obj" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/JField"
+          }
+        }
+      }
+    },
+    "JValue" : {
+      "type" : "object"
+    },
+    "UploadPermissionFileResponse" : {
+      "type" : "object",
+      "required" : [ "msg" ],
+      "properties" : {
+        "msg" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CheckboxCharacteristic" : {
+      "type" : "object",
+      "required" : [ "defaultValue", "description", "name", "technicalName" ],
+      "properties" : {
+        "technicalName" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "defaultValue" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "DropDownCharacteristic" : {
+      "type" : "object",
+      "required" : [ "defaultValue", "description", "name", "technicalName", "values" ],
+      "properties" : {
+        "technicalName" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "defaultValue" : {
+          "type" : "string"
+        }
+      }
+    },
+    "MultiSelectCharacteristic" : {
+      "type" : "object",
+      "required" : [ "defaultValue", "description", "name", "technicalName", "values" ],
+      "properties" : {
+        "technicalName" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "defaultValue" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PluginPermissionFile" : {
+      "type" : "object",
+      "required" : [ "checkboxCharacteristics", "dropDownCharacteristics", "multiSelectCharacteristics", "textfieldCharacteristics" ],
+      "properties" : {
+        "checkboxCharacteristics" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CheckboxCharacteristic"
+          }
+        },
+        "textfieldCharacteristics" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TextFieldCharacteristic"
+          }
+        },
+        "dropDownCharacteristics" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DropDownCharacteristic"
+          }
+        },
+        "multiSelectCharacteristics" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MultiSelectCharacteristic"
+          }
+        }
+      }
+    },
+    "TextFieldCharacteristic" : {
+      "type" : "object",
+      "required" : [ "defaultValue", "description", "name", "technicalName" ],
+      "properties" : {
+        "technicalName" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "defaultValue" : {
+          "type" : "string"
+        }
+      }
+    },
+    "DownloadPermissionFileResponse" : {
+      "type" : "object",
+      "required" : [ "data" ],
+      "properties" : {
+        "data" : {
+          "type" : "array",
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "byte"
+            }
+          }
+        },
+        "msg" : {
+          "type" : "string"
+        }
+      }
+    },
+    "DownloadPermissionFileRequest" : {
+      "type" : "object"
+    }
+  },
+  "externalDocs" : {
+    "url" : "https://community.simplifier.io/doc/current-release/"
+  }
+}

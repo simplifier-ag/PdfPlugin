@@ -1,0 +1,30 @@
+
+plugin {
+    registration {
+        host = "127.0.0.1"
+        port = 8085
+    }
+    http {
+        interface = "0.0.0.0"
+        port = 0
+        exposedHost = "127.0.0.1"
+    }
+    timeoutSeconds = 300
+}
+
+security {
+    incomingRequests {
+        trustedSources: {
+            blackList: []
+            whiteList: []
+        }
+        allowUntrustedUrls: true
+    }
+}
+
+pdfPlugin {
+    storageDir = "templates"
+    tempDir = "tmp"
+    wkhtmltopdf = "/usr/bin/wkhtmltopdf"
+    clearTempFiles = true
+}
