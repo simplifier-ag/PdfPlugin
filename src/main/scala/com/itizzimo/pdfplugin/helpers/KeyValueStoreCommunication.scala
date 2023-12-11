@@ -92,7 +92,7 @@ class KeyValueStoreCommunication(appServerDispatcher: AppServerDispatcher, plugi
   }
 
   def put(key: String, data: Array[Byte])(implicit requestSource: RequestSource, userSession: UserSession): Try[KeyValueStoreResult] = Try {
-    callPlugin[KeyValueStoreResult, KeyValueStorePutRequest]("put", KeyValueStorePutRequest(key, Some(encodeB64(data))))
+    callPlugin[KeyValueStoreResult, KeyValueStorePutRequest]("put", KeyValueStorePutRequest(key, Some(encodeB64(data))), None)
   }
 
 }
