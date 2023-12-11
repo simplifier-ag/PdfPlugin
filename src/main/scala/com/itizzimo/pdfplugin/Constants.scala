@@ -22,4 +22,6 @@ object Constants {
   final val INVALID_TEMPLATE_NAME: String = "A-000"
   final val TEMPLATE_NOT_EXISTING: String = "A-001"
   final val TEMPLATE_NAME_ALREADY_IN_USE: String = "A-002"
+
+  final val MERGE_NOT_POSSIBLE_DUE_TO_ENCRYPTION: String = "A-003"
 }

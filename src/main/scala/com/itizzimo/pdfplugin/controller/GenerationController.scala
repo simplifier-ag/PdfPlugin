@@ -8,6 +8,8 @@ import io.simplifier.pluginapi.helper.{Base64Encoding, PluginLogger}
 import io.simplifier.pluginbase.util.api.ApiMessage
 import io.simplifier.pluginbase.util.json.JSONCompatibility.parseJsonOrEmptyString
 import com.itizzimo.pdfplugin.DocumentConfig.getPdfConfigFromJSON
+import com.itizzimo.pdfplugin.Constants.MERGE_NOT_POSSIBLE_DUE_TO_ENCRYPTION
+import io.simplifier.pluginbase.slotservice.GenericFailureHandling.OperationFailureMessage
 import com.itizzimo.pdfplugin.RestMessages._
 import com.itizzimo.pdfplugin.TemplateStore.{SuccessfulWithValue, TemplateNotExisting}
 import com.itizzimo.pdfplugin.actor.ProcessGeneration
@@ -163,7 +165,10 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
             .fileId.getOrElse(throw FileIdNotFoundException)
           SuccessfulWithValue(fileId)
         }
-        case ex: Throwable => throw UnexpectedException(ex)
+        case ex: ProcessException if ex.getMessage contains ("PDF is encrypted") =>
+          throw OperationFailureMessage(ex.getMessage, MERGE_NOT_POSSIBLE_DUE_TO_ENCRYPTION)
+        case ex: Throwable =>
+          throw UnexpectedException(ex)
       }
     }
   }

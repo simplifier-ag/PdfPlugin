@@ -80,6 +80,7 @@ object GenericPdfSlotService {
         case INVALID_TEMPLATE_NAME => (1, "template name invalid")
         case TEMPLATE_NOT_EXISTING => (2, "template not existing")
         case TEMPLATE_NAME_ALREADY_IN_USE => (3, "template name already in use")
+        case MERGE_NOT_POSSIBLE_DUE_TO_ENCRYPTION => (4, "Merge not possible because the source PDF is encrypted, can't append encrypted PDF documents")
         case ERROR_CODE_MISSING_PERMISSION => (403, "forbidden")
         case _ => (500, "Unexpected exception")
       }
