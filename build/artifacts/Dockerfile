@@ -22,8 +22,8 @@ COPY --from=build /build/target/pdfPlugin.jar /opt/plugin/assets
 
 FROM scratch
 COPY --from=pdfplugin_builder /opt/plugin /opt/plugin
-COPY --from=pdfplugin_builder /usr/local/bin /opt/plugin/wkhtmltox
-COPY --from=pdfplugin_builder /usr/local/lib /opt/plugin/wkhtmltox
+COPY --from=pdfplugin_builder /usr/local/bin/. /opt/plugin/wkhtmltox
+COPY --from=pdfplugin_builder /usr/local/lib/. /opt/plugin/wkhtmltox
 
 # carry over some deprecated libs from debian:bullseye, which are no longer installable on debian:bookworm target platform
 COPY --from=pdfplugin_builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /opt/plugin/wkhtmltox
