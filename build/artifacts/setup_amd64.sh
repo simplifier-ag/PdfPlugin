@@ -30,7 +30,6 @@ ln -s /opt/wkhtmltox/libcrypto.so.1.1 /lib/x86_64-linux-gnu/
 
 # Legacy: provide reroute to wkhtmltopdf with patched qt
 ln -s $WKTOHTML_TARGET/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf-xvfb
-// cd /opt/wkhtmltox/lib; cp -a * /lib
 
 
 
