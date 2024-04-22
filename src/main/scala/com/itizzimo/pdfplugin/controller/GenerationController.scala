@@ -99,7 +99,7 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
                                       userSession: UserSession): Future[SuccessfulWithValue] = {
     permissionHandler.checkPermission(characteristicGeneratePdf)
     getTemplate(request.templateName) match {
-      case None => throw TemplateNotExisting(request.templateName)
+      case None => Future.failed(TemplateNotExisting(request.templateName))
       case Some(templateContent) =>
         val jobId = UUID.randomUUID.toString
         val pdfConfig = getConfig(request.config, templateContent.headerPath, templateContent.footerPath)
@@ -129,7 +129,7 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
                                      userSession: UserSession): Future[SuccessfulWithValue] = {
     permissionHandler.checkPermission(characteristicGeneratePdf)
     getTemplate(request.templateName) match {
-      case None => throw TemplateNotExisting(request.templateName)
+      case None => Future.failed(TemplateNotExisting(request.templateName))
       case Some(templateContent) =>
         val jobId = UUID.randomUUID.toString
         val pdfConfig = getConfig(request.config, templateContent.headerPath, templateContent.footerPath)
