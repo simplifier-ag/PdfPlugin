@@ -1,14 +1,13 @@
 package com.itizzimo.pdfplugin.actor
 
-import java.io.{ByteArrayOutputStream, File}
-
-import akka.actor.actorRef2Scala
 import com.itizzimo.pdfplugin.actor.ProcessCreation.PdfJobAbstraction
 import com.itizzimo.pdfplugin.actor.ProcessGeneration.{DirectGenerationJob, SubTaskException}
 import com.itizzimo.pdfplugin.actor.StepPrepareFiles.PreparationResult
 import com.typesafe.config.Config
 import io.github.simplifier_ag.scala.spdf.{Pdf, PdfConfig}
 import org.apache.commons.io.FileUtils
+
+import java.io.{ByteArrayOutputStream, File}
 
 /**
   * PDF Generation step: convert HTML file with assets to PDF.
@@ -54,6 +53,9 @@ class StepConvert(config: Config) extends PdfGenerationActor {
     val pdf = {
       Thread.sleep(2000)
 
+      // from version 0.12.6 of wkhtmltopdf local filesystem access is blocked by default
+      // we need to set this parameter to true to be able to access the css style sheet
+      job.pdfConfig.enableLocalFileAccess := true
       Pdf(pathToWkHtmlToPdf, job.pdfConfig)
     }
     val buffer = new ByteArrayOutputStream
