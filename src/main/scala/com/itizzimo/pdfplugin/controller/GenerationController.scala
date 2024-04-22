@@ -52,7 +52,7 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
     ActorSystem("pdfGeneration", ConfigFactory.defaultOverrides)
   }
 
-  def createActor(): ActorRef = {
+  private def createActor(): ActorRef = {
     /** Actor to handle the PDF Generation process. */
     actorSystem.actorOf(Props(new ProcessGeneration(keyValueStoreCommunication,
       new ContentRepoCommunication(appServerDispatcher, pluginSettings),
@@ -111,10 +111,9 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
             pdfConfig.hasCustomHeader, pdfConfig.hasCustomFooter, templateContent.header, templateContent.footer, Some(request.contentFileInfo))
         } yield {
           x match {
-            case PublishingResult(job: PdfGenerationJob) if job.contentFileInfo.isDefined => {
+            case PublishingResult(job: PdfGenerationJob) if job.contentFileInfo.isDefined =>
               val fileId = job.contentFileInfo.get.fileId.getOrElse(throw FileIdNotFoundException)
               SuccessfulWithValue(fileId)
-            }
             case pr: PublishingResult =>
               log.error(s"received publish result without content file info $pr")
               throw NoContentFileInfoException
@@ -139,10 +138,9 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
             pdfConfig.hasCustomHeader, pdfConfig.hasCustomFooter, templateContent.header, templateContent.footer)
         } yield {
           x match {
-            case MergedPdf(_, data) => {
+            case MergedPdf(_, data) =>
               val b64Data = encodeB64(data)
               SuccessfulWithValue(b64Data)
-            }
             case ex: Throwable => throw UnexpectedException(ex)
           }
         }
@@ -160,12 +158,11 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
         userSession, requestSource, hasCustomHeader = false, hasCustomFooter = false, request.contentFileInfo)
     } yield {
       x match {
-        case PublishingResult(job: MergeGenerationJob) if job.contentFileInfo.isDefined => {
+        case PublishingResult(job: MergeGenerationJob) if job.contentFileInfo.isDefined =>
           val fileId = job.contentFileInfo.getOrElse(throw FileIdNotFoundException)
             .fileId.getOrElse(throw FileIdNotFoundException)
           SuccessfulWithValue(fileId)
-        }
-        case ex: ProcessException if ex.getMessage contains ("PDF is encrypted") =>
+        case ex: ProcessException if ex.getMessage contains "PDF is encrypted" =>
           throw OperationFailureMessage(ex.getMessage, MERGE_NOT_POSSIBLE_DUE_TO_ENCRYPTION)
         case ex: Throwable =>
           throw UnexpectedException(ex)
@@ -184,10 +181,9 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
         config.hasCustomHeader, config.hasCustomFooter)
     } yield {
       x match {
-        case ConvertResult(_, data) => {
+        case ConvertResult(_, data) =>
           val b64Data = encodeB64(data)
           SuccessfulWithValue(b64Data)
-        }
         case ex: Throwable => throw UnexpectedException(ex)
       }
     }
