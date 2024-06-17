@@ -7,7 +7,7 @@ import akka.util.Timeout
 import io.simplifier.pluginapi.helper.{Base64Encoding, PluginLogger}
 import io.simplifier.pluginbase.util.api.ApiMessage
 import io.simplifier.pluginbase.util.json.JSONCompatibility.parseJsonOrEmptyString
-import com.itizzimo.pdfplugin.DocumentConfig.getPdfConfigFromJSON
+import com.itizzimo.pdfplugin.DocumentConfig.{getJavascriptEnabled, getPdfConfigFromJSON}
 import com.itizzimo.pdfplugin.Constants.MERGE_NOT_POSSIBLE_DUE_TO_ENCRYPTION
 import io.simplifier.pluginbase.slotservice.GenericFailureHandling.OperationFailureMessage
 import com.itizzimo.pdfplugin.RestMessages._
@@ -202,7 +202,7 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
       }
       parsed
     }
-    val pdfConfig = getPdfConfigFromJSON(pdfConfigJson)
+    val pdfConfig = getPdfConfigFromJSON(pdfConfigJson, getJavascriptEnabled(this.config))
     val hasCustomHeader = headerPathOpt.isDefined && !pdfConfig.hasHeaderParams
     val hasCustomFooter = footerPathOpt.isDefined && !pdfConfig.hasFooterParams
     if(hasCustomHeader) {

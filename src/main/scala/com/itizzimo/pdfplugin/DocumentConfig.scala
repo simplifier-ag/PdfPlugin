@@ -1,8 +1,11 @@
 package com.itizzimo.pdfplugin
 
+import com.typesafe.config.Config
 import io.simplifier.pluginapi.helper.PluginLogger
 import io.github.simplifier_ag.scala.spdf._
 import org.json4s._
+
+import scala.util.Try
 
 /**
   * JSON mapping for all support sPDF Configuration options.
@@ -39,13 +42,24 @@ object DocumentConfig extends PluginLogger {
   case class RepeatableStringMapParamMapping(param: Parameter[Map[String, String]]) extends ParamMapping
 
   /**
+   *  Read feature flag: wkhtmltopdf is allowed to execute server side javascript
+   */
+  def getJavascriptEnabled(config: Config): Boolean = {
+    val enabled: Boolean = Try(config.getBoolean("security.allowJavascript")).getOrElse(true)
+    if (enabled) {
+      log.warn("Unsafe Javascript execution is currently enabled.")
+    }
+    enabled
+  }
+
+  /**
     * Parse PDF Parameters from JSON value.
     */
-  def getPdfConfigFromJSON(json: Option[JValue]): ExtendedPdfConfig = json match {
+  def getPdfConfigFromJSON(json: Option[JValue], allowJavascript: Boolean): ExtendedPdfConfig = json match {
     case None =>
-      new ExtendedPdfConfig {}
+      new ExtendedPdfConfig(allowJavascript) {}
     case Some(obj: JObject) =>
-      new ExtendedPdfConfig {
+      new ExtendedPdfConfig(allowJavascript) {
 
         val booleanParams: Seq[Parameter[Boolean]] = Seq(
           extendedHelp,
@@ -68,8 +82,6 @@ object DocumentConfig extends PluginLogger {
           enableForms,
           disableInternalLinks,
           enableInternalLinks,
-          disableJavascript,
-          enableJavascript,
           keepRelativeLinks,
           disableLocalFileAccess,
           enableLocalFileAccess,
@@ -294,6 +306,6 @@ object DocumentConfig extends PluginLogger {
       }
     case Some(other) =>
       log.warn(s"PDF Configuration expected JSON object but got $other")
-      new ExtendedPdfConfig {}
+      new ExtendedPdfConfig(allowJavascript) {}
   }
 }

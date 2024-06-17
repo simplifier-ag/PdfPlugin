@@ -8,6 +8,7 @@ import com.itizzimo.pdfplugin.TemplateStore.TemplateOperationResult
 import com.itizzimo.pdfplugin.controller.CreationController
 import com.itizzimo.pdfplugin.controller.CreationController.CreatePdfRequest
 import com.itizzimo.pdfplugin.permission.PermissionHandler
+import com.typesafe.config.Config
 import io.simplifier.pluginbase.PluginSettings
 import io.simplifier.pluginapi.UserSession
 import io.simplifier.pluginapi.rest.PluginHeaders
@@ -30,10 +31,10 @@ class CreationSlotService(creationController: CreationController) extends Generi
 
 object CreationSlotService {
 
-  def apply(appServerDispatcher: AppServerDispatcher, pluginSettings: PluginSettings)
+  def apply(appServerDispatcher: AppServerDispatcher, pluginSettings: PluginSettings, config: Config)
            (implicit materializer: Materializer): CreationSlotService =
     new CreationSlotService(CreationController(appServerDispatcher, pluginSettings,
-      new PermissionHandler(appServerDispatcher, pluginSettings)))
+      new PermissionHandler(appServerDispatcher, pluginSettings), config))
 
   @Api(tags = Array("Creation"), authorizations = Array(new Authorization("basicAuth")))
   @Path("/client/2.0/pluginSlot/pdfPlugin/")

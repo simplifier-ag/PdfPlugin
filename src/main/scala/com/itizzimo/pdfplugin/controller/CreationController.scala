@@ -5,7 +5,7 @@ import akka.actor.{ActorRef, ActorSystem, Props, Terminated}
 import akka.stream.Materializer
 import io.simplifier.pluginapi.helper.PluginLogger
 import io.simplifier.pluginbase.util.api.ApiMessage
-import com.itizzimo.pdfplugin.DocumentConfig.getPdfConfigFromJSON
+import com.itizzimo.pdfplugin.DocumentConfig.{getJavascriptEnabled, getPdfConfigFromJSON}
 import com.itizzimo.pdfplugin.TemplateStore.{SuccessfulWithValue, TemplateOperationResult}
 import com.itizzimo.pdfplugin.actor.ProcessCreation
 import com.itizzimo.pdfplugin.actor.ProcessCreation.PdfCreationJob
@@ -17,15 +17,17 @@ import io.simplifier.pluginbase.PluginSettings
 import io.simplifier.pluginapi.UserSession
 import io.simplifier.pluginapi.rest.PluginHeaders.RequestSource
 import io.simplifier.pluginbase.interfaces.AppServerDispatcher
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import io.simplifier.pluginbase.util.json.JSONCompatibility._
+
 import scala.concurrent.Future
 import scala.util.Try
 
 class CreationController(keyValueStoreCommunication: KeyValueStoreCommunication,
                          contentRepoCommunication: ContentRepoCommunication,
                          appServerCommunication: AppServerCommunication,
-                         permissionHandler: PermissionHandler) extends PluginLogger {
+                         permissionHandler: PermissionHandler,
+                         config: Config) extends PluginLogger {
 
   import CreationController._
 
@@ -69,7 +71,7 @@ class CreationController(keyValueStoreCommunication: KeyValueStoreCommunication,
         }
         parsed
     }
-    val pdfConfig = getPdfConfigFromJSON(pdfConfigJson)
+    val pdfConfig = getPdfConfigFromJSON(pdfConfigJson, getJavascriptEnabled(config))
     log.debug(s"Starting PDF Creation job (session: ${request.sessions}, user: $userSession)")
     processActor ! PdfCreationJob(jobId, request.sessions, pdfConfig, userSession, requestSource,
       hasCustomHeader = false, hasCustomFooter = false)
@@ -81,11 +83,11 @@ class CreationController(keyValueStoreCommunication: KeyValueStoreCommunication,
 
 object CreationController {
 
-  def apply(appServerDispatcher: AppServerDispatcher, pluginSettings: PluginSettings, permissionHandler: PermissionHandler)
+  def apply(appServerDispatcher: AppServerDispatcher, pluginSettings: PluginSettings, permissionHandler: PermissionHandler, config: Config)
            (implicit materializer: Materializer): CreationController = {
     val keyValueStoreCommunication = new KeyValueStoreCommunication(appServerDispatcher, pluginSettings)
     new CreationController(keyValueStoreCommunication, new ContentRepoCommunication(appServerDispatcher, pluginSettings),
-      new AppServerCommunication(keyValueStoreCommunication, appServerDispatcher, pluginSettings), permissionHandler)
+      new AppServerCommunication(keyValueStoreCommunication, appServerDispatcher, pluginSettings), permissionHandler, config)
   }
 
   case class CreatePdfRequest(sessions: Seq[String], config: Option[String]) extends ApiMessage

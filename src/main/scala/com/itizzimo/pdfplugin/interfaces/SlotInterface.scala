@@ -59,7 +59,7 @@ object SlotInterface {
       pluginPermission,
       AdministrationSlotService(dispatcher, settings, config),
       GenerationSlotService(dispatcher, settings, config),
-      CreationSlotService(dispatcher, settings),
+      CreationSlotService(dispatcher, settings, config),
       new PermissionHandler(dispatcher, settings))
 
 }

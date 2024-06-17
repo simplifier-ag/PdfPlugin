@@ -20,6 +20,8 @@ security {
         }
         allowUntrustedUrls: true
     }
+
+    allowJavascript = true
 }
 
 pdfPlugin {
