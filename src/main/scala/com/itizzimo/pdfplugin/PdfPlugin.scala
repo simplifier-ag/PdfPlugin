@@ -27,7 +27,7 @@ abstract class PdfPluginLogic extends SimplifierPluginLogic(Defaults.PLUGIN_DESC
   override def pluginPermissions: Seq[PluginPermissionObject] = Seq(pluginPermission)
 
   override def startPluginServices(basicState: SimplifierPlugin.BasicState): Future[PluginBaseHttpService] = Future {
-    val slotInterface = Some(SlotInterface(basicState.dispatcher, basicState.settings, basicState.config,
+    val slotInterface = Some(SlotInterface(basicState.dispatcher, basicState.settings, basicState.config.resolve(),
       basicState.pluginDescription, pluginPermission))
     val proxyInterface = None
     val configInterface = Some(new ConfigInterface("", "assets/",
