@@ -47,7 +47,7 @@ object DocumentConfig extends PluginLogger {
   def getJavascriptEnabled(config: Config): Boolean = {
     // plugin-base does not, read config via resolve(), so emulate the following behavior:
     //  use environment variable, fall back to config property and then default value
-    val defaultValue = true
+    val defaultValue = false
     val enabled = sys.env.get("PDFPLUGIN_SECURITY_ALLOW_JAVASCRIPT").map(_.toLowerCase() == "true").getOrElse {
       Try(config.getBoolean("security.allowJavascript")).getOrElse(defaultValue)
     }
