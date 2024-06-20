@@ -45,14 +45,21 @@ object DocumentConfig extends PluginLogger {
    *  Read feature flag: wkhtmltopdf is allowed to execute server side javascript
    */
   def getJavascriptEnabled(config: Config): Boolean = {
-    // plugin-base does not, read config via resolve(), so emulate the following behavior:
-    //  use environment variable, fall back to config property and then default value
-    val defaultValue = false
-    val enabled = sys.env.get("PDFPLUGIN_SECURITY_ALLOW_JAVASCRIPT").map(_.toLowerCase() == "true").getOrElse {
-      Try(config.getBoolean("security.allowJavascript")).getOrElse(defaultValue)
+    // plugin-base does not read config via resolve(), so emulate the following behavior:
+    val enabled = sys.env.get("PDFPLUGIN_SECURITY_ALLOW_JAVASCRIPT").map(_.toLowerCase()) flatMap {
+      // use boolean string from from env variable
+      case "true" => Some(true)
+      case "false" => Some(false)
+      case _ => None
+    } orElse {
+      // fall back to config property
+      Try(config.getBoolean("security.allowJavascript")).toOption
+    } getOrElse {
+      // fall back to default value
+      false
     }
     if (enabled) {
-      log.warn("Unsafe Javascript execution is currently enabled.")
+      log.warn("Unsafe Javascript execution is currently enabled!")
     }
     enabled
   }
