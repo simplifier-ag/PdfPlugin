@@ -1,4 +1,4 @@
-version="0.3.8"
+version="0.4.0"
 name="pdfplugin"
 remote_tag=simplifierag/${name}:${version}
 echo "***** building:" ${name}:${version}
