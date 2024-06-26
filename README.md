@@ -45,10 +45,15 @@ When launching the jar, the config file must be given as a commandline argument.
 
 - The Property `pdfPlugin.wkhtmltopdf` must point to the location of the `wkhtmltopdf` executable.
 - The `pdfPlugin.storageDir` and `pdfPlugin.tempDir` must point to writable paths for storing PDF data.
-- Provide the correct ```database``` data according to your local setup.
+- Provide the correct ```database``` data according to your local setup __note__: Only MySQL and Oracle are supported!
 - Provide the correct ```filename``` path according to your local setup.
+- The flag `security.allowJavascript` allows to toggle server side Javascript execution during PDF rendering. 
+This setting can be overridden by the environment variable `PDFPLUGIN_SECURITY_ALLOW_JAVASCRIPT`. 
+It is recommended to set it to _false_ for increased securtity (default for Simplifier >= 8.EHP3, using PdfPlugin >= 0.4.0).
 
-__Please note__: Only MySQL and Oracle are supported!
+
+
+
 
 ### Build and Run
 
