@@ -29,3 +29,31 @@ lazy val contentRepoPlugin = (project in file("."))
     )
   )
 
+
+
+//Security Options for Java >= 18
+lazy val requireAddOpensPackages = Seq(
+  "java.base/java.lang",
+  "java.base/java.util",
+  "java.base/java.time",
+  "java.base/java.lang.invoke",
+  "java.base/sun.security.jca"
+)
+lazy val requireAddExportsPackages = Seq(
+  "java.xml/com.sun.org.apache.xalan.internal.xsltc.trax"
+)
+
+assembly / packageOptions +=
+  Package.ManifestAttributes(
+    "Add-Opens" -> requireAddOpensPackages.mkString(" "),
+    "Add-Exports" -> requireAddExportsPackages.mkString(" "),
+    "Class-Path" -> (file("lib") * "*.jar").get.mkString(" ")
+  )
+
+run / javaOptions ++=
+  requireAddOpensPackages.map("--add-opens=" + _ + "=ALL-UNNAMED") ++
+    requireAddExportsPackages.map("--add-exports=" + _ + "=ALL-UNNAMED")
+
+run / fork := true
+
+
