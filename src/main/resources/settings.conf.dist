@@ -30,3 +30,7 @@ pdfPlugin {
     wkhtmltopdf = "/usr/bin/wkhtmltopdf"
     clearTempFiles = true
 }
+
+akka.http.parsing.max-to-strict-bytes = 15m
+akka.http.client.parsing.max-content-length = 15m
+akka.http.server.parsing.max-content-length = 15m
