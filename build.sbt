@@ -18,7 +18,7 @@ lazy val contentRepoPlugin = (project in file("."))
         oldStrategy(x)
     },
     libraryDependencies ++= Seq(
-      "io.github.simplifier-ag" %% "simplifier-plugin-base" % "1.0.0" withSources(),
+      "io.github.simplifier-ag" %% "simplifier-plugin-base" % "1.0.2" withSources(),
       "io.github.simplifier-ag" %% "spdf" % "1.5.0" withSources() withJavadoc(),
       "com.typesafe" %% "ssl-config-core" % "0.6.1" withSources() withJavadoc(),
       "org.apache.pdfbox" % "pdfbox" % "1.8.10" withSources() withJavadoc(),
