@@ -1,0 +1,174 @@
+<mvc:View
+	controllerName="io.simplifier.ui5.plugin.pdfPlugin.adminui.pdfGenerator"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:admin="io.simplifier.ui5.adminui.controls.editorArea">
+
+	<Panel width="100%">
+		<content>
+			<Bar>
+				<contentLeft></contentLeft>
+				<contentMiddle>
+					<Label design="Bold" text="{i18n_pdfplugin>PDFGeneratorViewCaption}" />
+				</contentMiddle>
+				<contentRight>
+					<Button
+						type="Transparent"
+						icon="sap-icon://pdf-attachment"
+						enabled="{= ${/current/enabled} &amp;&amp; ${/current/loaded} &amp;&amp; ${/current/inserted}}"
+						press="onPdfPreview" />
+					<Button
+						type="Transparent"
+						icon="sap-icon://save"
+						enabled="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+						press="onSaveTemplate" />
+				</contentRight>
+			</Bar>
+
+			<HBox renderType="Bare">
+				<items>
+					<Panel height="720px" headerText="{i18n_pdfplugin>PDFGeneratorOverviewLabel}">
+						<layoutData>
+							<FlexItemData maxWidth="20%" />
+						</layoutData>
+						<content>
+							<Toolbar>
+								<content>
+									<SegmentedButton>
+										<items>
+											<SegmentedButtonItem
+												text="{i18n_pdfplugin>PDFGeneratorTemplatesLabel}"
+												press="onTemplatePress" />
+											<SegmentedButtonItem
+												text="{i18n_pdfplugin>PDFGeneratorFieldLabel}"
+												press="onFieldsPress" />
+										</items>
+									</SegmentedButton>
+									<ToolbarSpacer />
+								</content>
+							</Toolbar>
+
+							<Panel id="templatesContent">
+								<content>
+									<Toolbar>
+										<content>
+											<Button
+												type="Transparent"
+												icon="sap-icon://add"
+												enabled="{/current/enabled}"
+												press="onCreateNewTemplate" />
+											<ToolbarSpacer />
+											<Button
+												type="Transparent"
+												icon="sap-icon://delete"
+												enabled="{= ${/current/enabled} &amp;&amp; ${/current/inserted}}"
+												press="onDeleteTemplate" />
+										</content>
+									</Toolbar>
+
+									<Panel id="templateName" width="100%" headerText="{i18n_pdfplugin>PDFGeneratorTemplateNameLabel}">
+										<content>
+											<Input
+												value="{/current/templateName}"
+												editable="{= ${/current/enabled} &amp;&amp; !${/current/inserted} &amp;&amp; ${/current/loaded}}" />
+										</content>
+									</Panel>
+
+									<Toolbar design="Transparent">
+										<content>
+											<SearchField liveChange="onSearchTemplate" />
+										</content>
+									</Toolbar>
+
+									<List id="templatesTree" mode="SingleSelectMaster" selectionChange="onTemplateSelected"
+										items="{path: '/templates', templateShareable: false}">
+										<StandardListItem
+											title="{name}"
+											icon="sap-icon://form" />
+									</List>
+								</content>
+							</Panel>
+
+							<Panel id="fieldsContent" visible="false">
+								<content>
+									<Toolbar></Toolbar>
+									<List id="fieldsTree" mode="SingleSelectMaster"
+										items="{path: '/fields', templateShareable: false}">
+										<StandardListItem
+											title="{name}"
+											icon="sap-icon://filter-fields" />
+									</List>
+								</content>
+							</Panel>
+						</content>
+					</Panel>
+
+					<Panel height="720px" width="100%" headerText="{i18n_pdfplugin>PDFGeneratorContentLabel}">
+						<content>
+							<Toolbar>
+								<content>
+									<SegmentedButton>
+										<items>
+											<SegmentedButtonItem text="Body" press="onHTMLPress" />
+											<SegmentedButtonItem text="Header" press="onHeaderPress" />
+											<SegmentedButtonItem text="Footer" press="onFooterPress" />
+											<SegmentedButtonItem text="CSS" press="onCSSPress" />
+											<SegmentedButtonItem text="JSON (Preview)" press="onJSONPress" />
+										</items>
+									</SegmentedButton>
+									<ToolbarSpacer />
+								</content>
+							</Toolbar>
+
+							<admin:EditorArea
+								id="htmlContent"
+								editorValue="{/current/content}"
+								editorType="html"
+								editorHeight="575px"
+								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editorLiveChange="onGeneratePreview" />
+
+							<admin:EditorArea
+								id="headerContent"
+								editorValue="{/current/header}"
+								editorType="html"
+								editorHeight="575px"
+								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editorLiveChange="onGeneratePreview" />
+
+							<admin:EditorArea
+								id="footerContent"
+								editorValue="{/current/footer}"
+								editorType="html"
+								editorHeight="575px"
+								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editorLiveChange="onGeneratePreview" />
+
+							<admin:EditorArea
+								id="cssContent"
+								visible="false"
+								editorValue="{/current/css}"
+								editorType="css"
+								editorHeight="575px"
+								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editorLiveChange="onGeneratePreview" />
+
+							<admin:EditorArea
+								id="jsonContent"
+								visible="false"
+								editorValue="{/current/json}"
+								editorType="json"
+								editorHeight="575px"
+								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editorLiveChange="onGeneratePreview" />
+						</content>
+					</Panel>
+
+					<Panel id="previewPanel" height="720px" width="100%" headerText="{i18n_pdfplugin>PDFGeneratorPreviewLabel}">
+					</Panel>
+				</items>
+			</HBox>
+		</content>
+	</Panel>
+</mvc:View>

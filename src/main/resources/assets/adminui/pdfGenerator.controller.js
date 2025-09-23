@@ -1,11 +1,11 @@
 sap.ui.define([
-	'jquery.sap.global',
-	'io/simplifier/ui5/framework/Util',
+	'sap/base/strings/formatMessage',
+	'io/simplifier/ui5/adminui/Util',
 	'io/simplifier/ui5/adminui/modules/AppController',
 	'sap/ui/model/json/JSONModel',
-    'io/simplifier/ui5/framework/Ajax',
+    'io/simplifier/ui5/adminui/Ajax',
 	'io/simplifier/ui5/adminui/controls/editorArea/EditorArea'
-], function(jQuery, Util, Controller, JSONModel, Ajax, EditorArea) {
+], function(formatMessage, Util, Controller, JSONModel, Ajax, EditorArea) {
 	"use strict";
 
 	/*
@@ -45,7 +45,7 @@ sap.ui.define([
 
 			// I18n for plugin view
 			var i18nModel = new sap.ui.model.resource.ResourceModel({
-				bundleUrl : [jQuery.sap.getModulePath("io.simplifier.ui5.plugin.pdfPlugin.adminui"), "i18n/i18n.properties"].join("/")
+				bundleUrl : sap.ui.require.toUrl("io/simplifier/ui5/plugin/pdfPlugin/adminui/i18n/i18n.properties")
 			});
 			sap.ui.getCore().setModel(i18nModel, "i18n_pdfplugin");
 			this.getView().setModel(i18nModel, "i18n_pdfplugin");
@@ -256,7 +256,7 @@ sap.ui.define([
 		onDeleteTemplate: function(){
 			var sTemplate = this.getView().getModel().getProperty("/current/templateName");
             this.Util.showConfirmationDialog(
-                jQuery.sap.formatMessage("Do you really wish to delete template ''{0}''?", sTemplate),
+                formatMessage("Do you really wish to delete template ''{0}''?", sTemplate),
                 "Delete template",
                 function() {
                     this.deleteTemplate();
@@ -605,7 +605,7 @@ sap.ui.define([
 		},
 
 		onDisplayError: function(message, detail) {
-			this.Util.showErrorDialog(message + "\n" + detail);
+			this.Util.showErrorDialog({sMsg: message, oDetails: detail});
 		},
 
 		/*
