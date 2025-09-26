@@ -3,7 +3,7 @@ sap.ui.define([
 	'io/simplifier/ui5/adminui/Util',
 	'io/simplifier/ui5/adminui/modules/AppController',
 	'sap/ui/model/json/JSONModel',
-    'io/simplifier/ui5/adminui/Ajax',
+	'io/simplifier/ui5/adminui/Ajax',
 	'io/simplifier/ui5/adminui/controls/editorArea/EditorArea'
 ], function(formatMessage, Util, Controller, JSONModel, Ajax, EditorArea) {
 	"use strict";
@@ -47,7 +47,6 @@ sap.ui.define([
 			var i18nModel = new sap.ui.model.resource.ResourceModel({
 				bundleUrl : sap.ui.require.toUrl("io/simplifier/ui5/plugin/pdfPlugin/adminui/i18n/i18n.properties")
 			});
-			sap.ui.getCore().setModel(i18nModel, "i18n_pdfplugin");
 			this.getView().setModel(i18nModel, "i18n_pdfplugin");
 
 			this.refreshTemplates();
@@ -63,7 +62,6 @@ sap.ui.define([
 						"<ul>\n  <li>Livepreview</li>\n  <li>Mustachefields</li>\n  <li>HTML and CSS manipulation</li>\n  <li>Add, edit, export templates</li>\n</ul>";
 
 			var css = 	"h2{\n    color:grey;\n}\n" +
-						"p{\n   color:black;\n}\n" +
 						".highlight{\n    color:#1c98d6;\n    font-weight:bold;\n}"
 
 			var json =  JSON.stringify({
