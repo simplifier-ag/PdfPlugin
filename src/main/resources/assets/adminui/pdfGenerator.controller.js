@@ -3,9 +3,14 @@ sap.ui.define([
 	'io/simplifier/ui5/adminui/Util',
 	'io/simplifier/ui5/adminui/modules/AppController',
 	'sap/ui/model/json/JSONModel',
+	'sap/ui/model/resource/ResourceModel',
 	'io/simplifier/ui5/adminui/Ajax',
-	'io/simplifier/ui5/adminui/controls/editorArea/EditorArea'
-], function(formatMessage, Util, Controller, JSONModel, Ajax, EditorArea) {
+	'sap/ui/thirdparty/jquery',
+	'sap/ui/require',
+	'sap/m',
+	'sap/ui/core',
+	'sap/ui/model',
+], function(formatMessage, Util, Controller, JSONModel, ResourceModel, Ajax, jQuery, require, m, core, model) {
 	"use strict";
 
 	/*
@@ -21,11 +26,11 @@ sap.ui.define([
 
 			// Load mustache
 			var mustacheUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/mustache.min.js";
-			$.getScript(mustacheUrl, function(){});
+			jQuery.getScript(mustacheUrl, function(){});
 
 			// Load LESS
 			var lessUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/less.min.js";
-			$.getScript(lessUrl, function(){});
+			jQuery.getScript(lessUrl, function(){});
 
 			var oData = {
 				"templates": [],
@@ -44,8 +49,8 @@ sap.ui.define([
 			this.getView().setModel(oModel);
 
 			// I18n for plugin view
-			var i18nModel = new sap.ui.model.resource.ResourceModel({
-				bundleUrl : sap.ui.require.toUrl("io/simplifier/ui5/plugin/pdfPlugin/adminui/i18n/i18n.properties")
+			var i18nModel = new ResourceModel({
+				bundleUrl : require.toUrl("io/simplifier/ui5/plugin/pdfPlugin/adminui/i18n/i18n.properties")
 			});
 			this.getView().setModel(i18nModel, "i18n_pdfplugin");
 
@@ -173,7 +178,7 @@ sap.ui.define([
 			var oModel = this.getView().getModel();
 			var fields = [];
 			if (jsonValid) {
-				$.each(json, function(key, value) {
+				jQuery.each(json, function(key, value) {
 					fields.push({'name': key});
 				});
 			}
@@ -201,19 +206,19 @@ sap.ui.define([
 
 				var content;
 				if (!mustacheValid) {
-					content = new sap.m.Label({
+					content = new m.Label({
 						text: "Invalid HTML template"
 					});
 				} else if (!jsonValid) {
-					content = new sap.m.Label({
+					content = new m.Label({
 						text: "Invalid JSON data"
 					});
 				} else if (!lessValid) {
-					content = new sap.m.Label({
+					content = new m.Label({
 						text: "Invalid Stylesheet data"
 					});
 				} else {
-					content = new sap.ui.core.HTML().setContent(
+					content = new core.HTML().setContent(
 							'<style type="text/css">' + less + '</style><div>' + code + '</div>');
 				}
 				this.getView().byId("previewPanel").addContent(content);
@@ -253,7 +258,7 @@ sap.ui.define([
 
 		onDeleteTemplate: function(){
 			var sTemplate = this.getView().getModel().getProperty("/current/templateName");
-            this.Util.showConfirmationDialog(
+            Util.showConfirmationDialog(
                 formatMessage("Do you really wish to delete template ''{0}''?", sTemplate),
                 "Delete template",
                 function() {
@@ -283,7 +288,7 @@ sap.ui.define([
 			const oModel = this.getView().getModel();
 			const bDeleteAllowed = oModel.getProperty("/current/enabled") && oModel.getProperty("/current/inserted");
 			const bListNotEmpty = oModel.getProperty("/templates/length") !== 0;
-			const bNoDialogOpen = sap.m.InstanceManager.getOpenDialogs().length === 0;
+			const bNoDialogOpen = m.InstanceManager.getOpenDialogs().length === 0;
 			return bDeleteAllowed && bListNotEmpty && bNoDialogOpen;
 		},
 
@@ -315,7 +320,7 @@ sap.ui.define([
 				this.onTemplateListRefreshFailed(data);
 				return;
 			}
-			$.each(data.templates, function() {
+			jQuery.each(data.templates, function() {
 				templates.push({name: this});
 			});
 			oModel.setProperty("/templates", templates);
@@ -323,7 +328,7 @@ sap.ui.define([
 
             var oList = this.getView().byId("templatesTree");
             if (oList.getBinding("items")) {
-                oList.getBinding("items").sort(new sap.ui.model.Sorter("name"));
+                oList.getBinding("items").sort(new model.Sorter("name"));
             }
 		},
 
@@ -422,7 +427,7 @@ sap.ui.define([
 				this.onTemplateListRefreshFailed(data);
 				return;
 			}
-			$.each(data.templates, function() {
+			jQuery.each(data.templates, function() {
 				templates.push({name: this});
 			});
 			oModel.setProperty("/templates", templates);
@@ -431,7 +436,7 @@ sap.ui.define([
 			// Select inserted template in list
 			var templateName = oModel.getProperty("/current/templateName");
 			var oTemplateList = this.getView().byId('templatesTree');
-			$.each(oTemplateList.getItems(), function() {
+			jQuery.each(oTemplateList.getItems(), function() {
 				var oNode = this;
 				if (oNode.prop('title') === templateName) {
 					oTemplateList.setSelectedItem(oNode);
@@ -506,7 +511,7 @@ sap.ui.define([
 				this.onTemplateListRefreshFailed(data);
 				return;
 			}
-			$.each(data.templates, function() {
+			jQuery.each(data.templates, function() {
 				templates.push({name: this});
 			});
 			oModel.setProperty("/templates", templates);
@@ -528,7 +533,7 @@ sap.ui.define([
 		},
 
 		onPdfPreview: function() {
-			sap.ui.core.BusyIndicator.show();
+			core.BusyIndicator.show();
 			var oModel = this.getView().getModel();
 			var jsonData = oModel.getProperty("/current/json");
 			var json = {};
@@ -565,7 +570,7 @@ sap.ui.define([
 			var counter = this.genPdfWaitTries;
 			if (!counter || counter <= 0) {
 				console.log("Wait without success ...");
-				sap.ui.core.BusyIndicator.hide();
+				core.BusyIndicator.hide();
 				return;
 			}
 			this.genPdfWaitTries = counter - 1;
@@ -578,7 +583,7 @@ sap.ui.define([
 					return;
 				}
 				console.log(data.result);
-				sap.ui.core.BusyIndicator.hide();
+				core.BusyIndicator.hide();
 
 			    var pdfPreview = window.open("/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.html", "_blank");
                 pdfPreview.onload = function() {
@@ -594,7 +599,7 @@ sap.ui.define([
 		},
 
 		onPdfPreviewError: function(error) {
-			sap.ui.core.BusyIndicator.hide();
+			core.BusyIndicator.hide();
 			var detail = error;
 			if (error.message) {
 				detail = error.message;
@@ -603,7 +608,7 @@ sap.ui.define([
 		},
 
 		onDisplayError: function(message, detail) {
-			this.Util.showErrorDialog({sMsg: message, oDetails: detail});
+			Util.showErrorDialog({sMsg: message, oDetails: detail});
 		},
 
 		/*
@@ -622,7 +627,6 @@ sap.ui.define([
 
 		apiRequest: function(urlSuffix, data, callback, errorCallback) {
 			var url = "/client/1.0/PLUGIN/pdfPlugin/" + urlSuffix;
-			//var $this = this;
 			var request = {
 				'username' : this.apiGetUsername(),
 				'password' : this.apiGetPassword(),
@@ -640,7 +644,7 @@ sap.ui.define([
             Ajax.ajaxPost(url, request.success, request.error, {},
                 request.context, request.data, request.dataType
             );
-			//$.ajax(url, request);
+			//jQuery.ajax(url, request);
 		},
 
 		apiListTemplates: function(callback, errorCallback) {
@@ -692,7 +696,6 @@ sap.ui.define([
 
 		apiRequestKeyValueStore: function(urlSuffix, data, callback, errorCallback) {
 			var url = "/client/1.0/PLUGIN/keyValueStorePlugin/" + urlSuffix;
-			//var $this = this;
 			var request = {
 				'username' : this.apiGetUsername(),
 				'password' : this.apiGetPassword(),
@@ -710,7 +713,7 @@ sap.ui.define([
             Ajax.ajaxPost(url, request.success, request.error, {},
                 request.context, request.data, request.dataType
             );
-			//$.ajax(url, request);
+			//jQuery.ajax(url, request);
 		},
 
 		apiPutKeyValueStore: function(key, content, callback, errorCallback) {
@@ -734,7 +737,7 @@ sap.ui.define([
             var aFilters = [];
             var sQuery = oEvent.getParameter("newValue");
             if (sQuery && sQuery.length > 0) {
-                aFilters.push(new sap.ui.model.Filter("name", sap.ui.model.FilterOperator.Contains, sQuery));
+                aFilters.push(new model.Filter("name", model.FilterOperator.Contains, sQuery));
             }
             oList.getBinding("items").filter(aFilters);
 		},

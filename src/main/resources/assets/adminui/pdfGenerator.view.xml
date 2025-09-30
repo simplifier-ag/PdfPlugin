@@ -17,12 +17,12 @@
 						type="Transparent"
 						icon="sap-icon://pdf-attachment"
 						enabled="{= ${/current/enabled} &amp;&amp; ${/current/loaded} &amp;&amp; ${/current/inserted}}"
-						press="onPdfPreview" />
+						press=".onPdfPreview" />
 					<Button
 						type="Transparent"
 						icon="sap-icon://save"
 						enabled="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-						press="onSaveTemplate" />
+						press=".onSaveTemplate" />
 				</contentRight>
 			</Bar>
 
@@ -39,10 +39,10 @@
 										<items>
 											<SegmentedButtonItem
 												text="{i18n_pdfplugin>PDFGeneratorTemplatesLabel}"
-												press="onTemplatePress" />
+												press=".onTemplatePress" />
 											<SegmentedButtonItem
 												text="{i18n_pdfplugin>PDFGeneratorFieldLabel}"
-												press="onFieldsPress" />
+												press=".onFieldsPress" />
 										</items>
 									</SegmentedButton>
 									<ToolbarSpacer />
@@ -57,13 +57,13 @@
 												type="Transparent"
 												icon="sap-icon://add"
 												enabled="{/current/enabled}"
-												press="onCreateNewTemplate" />
+												press=".onCreateNewTemplate" />
 											<ToolbarSpacer />
 											<Button
 												type="Transparent"
 												icon="sap-icon://delete"
 												enabled="{= ${/current/enabled} &amp;&amp; ${/current/inserted}}"
-												press="onDeleteTemplate" />
+												press=".onDeleteTemplate" />
 										</content>
 									</Toolbar>
 
@@ -77,11 +77,11 @@
 
 									<Toolbar design="Transparent">
 										<content>
-											<SearchField liveChange="onSearchTemplate" />
+											<SearchField liveChange=".onSearchTemplate" />
 										</content>
 									</Toolbar>
 
-									<List id="templatesTree" mode="SingleSelectMaster" selectionChange="onTemplateSelected"
+									<List id="templatesTree" mode="SingleSelectMaster" selectionChange=".onTemplateSelected"
 										items="{path: '/templates', templateShareable: false}">
 										<StandardListItem
 											title="{name}"
@@ -110,11 +110,11 @@
 								<content>
 									<SegmentedButton>
 										<items>
-											<SegmentedButtonItem text="Body" press="onHTMLPress" />
-											<SegmentedButtonItem text="Header" press="onHeaderPress" />
-											<SegmentedButtonItem text="Footer" press="onFooterPress" />
-											<SegmentedButtonItem text="CSS" press="onCSSPress" />
-											<SegmentedButtonItem text="JSON (Preview)" press="onJSONPress" />
+											<SegmentedButtonItem text="Body" press=".onHTMLPress" />
+											<SegmentedButtonItem text="Header" press=".onHeaderPress" />
+											<SegmentedButtonItem text="Footer" press=".onFooterPress" />
+											<SegmentedButtonItem text="CSS" press=".onCSSPress" />
+											<SegmentedButtonItem text="JSON (Preview)" press=".onJSONPress" />
 										</items>
 									</SegmentedButton>
 									<ToolbarSpacer />
@@ -127,7 +127,7 @@
 								editorType="html"
 								editorHeight="575px"
 								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange="onGeneratePreview" />
+								editorLiveChange=".onGeneratePreview" />
 
 							<admin:EditorArea
 								id="headerContent"
@@ -135,7 +135,7 @@
 								editorType="html"
 								editorHeight="575px"
 								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange="onGeneratePreview" />
+								editorLiveChange=".onGeneratePreview" />
 
 							<admin:EditorArea
 								id="footerContent"
@@ -143,7 +143,7 @@
 								editorType="html"
 								editorHeight="575px"
 								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange="onGeneratePreview" />
+								editorLiveChange=".onGeneratePreview" />
 
 							<admin:EditorArea
 								id="cssContent"
@@ -152,7 +152,7 @@
 								editorType="css"
 								editorHeight="575px"
 								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange="onGeneratePreview" />
+								editorLiveChange=".onGeneratePreview" />
 
 							<admin:EditorArea
 								id="jsonContent"
@@ -161,7 +161,7 @@
 								editorType="json"
 								editorHeight="575px"
 								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange="onGeneratePreview" />
+								editorLiveChange=".onGeneratePreview" />
 						</content>
 					</Panel>
 
