@@ -1,9 +1,10 @@
 ThisBuild / organization := "com.itizzimo"
 ThisBuild / version := sys.env.get("VERSION").getOrElse("NA")
-ThisBuild / scalaVersion := "2.12.15"
+ThisBuild / scalaVersion := "2.12.21"
 
 ThisBuild / useCoursier := true
 
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % "always"
 
 lazy val contentRepoPlugin = (project in file("."))
   .settings(
@@ -18,7 +19,7 @@ lazy val contentRepoPlugin = (project in file("."))
         oldStrategy(x)
     },
     libraryDependencies ++= Seq(
-      "io.github.simplifier-ag" %% "simplifier-plugin-base" % "1.0.2" withSources(),
+      "io.github.simplifierio" %% "simplifier-plugin-base" % "2.0.0" withSources(),
       "io.github.simplifier-ag" %% "spdf" % "1.5.0" withSources() withJavadoc(),
       "com.typesafe" %% "ssl-config-core" % "0.6.1" withSources() withJavadoc(),
       "org.apache.pdfbox" % "pdfbox" % "1.8.10" withSources() withJavadoc(),

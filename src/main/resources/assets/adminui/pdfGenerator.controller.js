@@ -6,11 +6,14 @@ sap.ui.define([
 	'sap/ui/model/resource/ResourceModel',
 	'io/simplifier/ui5/adminui/Ajax',
 	'sap/ui/thirdparty/jquery',
-	'sap/ui/require',
-	'sap/m',
-	'sap/ui/core',
-	'sap/ui/model',
-], function(formatMessage, Util, Controller, JSONModel, ResourceModel, Ajax, jQuery, require, m, core, model) {
+	'sap/m/Label',
+    'sap/m/InstanceManager',
+	'sap/ui/core/HTML',
+	'sap/ui/core/BusyIndicator',
+	'sap/ui/model/Sorter',
+	'sap/ui/model/Filter',
+	'sap/ui/model/FilterOperator',
+], function(formatMessage, Util, Controller, JSONModel, ResourceModel, Ajax, jQuery, Label, InstanceManager, HTML, BusyIndicator, Sorter, Filter, FilterOperator) {
 	"use strict";
 
 	/*
@@ -50,7 +53,7 @@ sap.ui.define([
 
 			// I18n for plugin view
 			var i18nModel = new ResourceModel({
-				bundleUrl : require.toUrl("io/simplifier/ui5/plugin/pdfPlugin/adminui/i18n/i18n.properties")
+				bundleUrl : sap.ui.require.toUrl("io/simplifier/ui5/plugin/pdfPlugin/adminui/i18n/i18n.properties")
 			});
 			this.getView().setModel(i18nModel, "i18n_pdfplugin");
 
@@ -206,19 +209,19 @@ sap.ui.define([
 
 				var content;
 				if (!mustacheValid) {
-					content = new m.Label({
+					content = new Label({
 						text: "Invalid HTML template"
 					});
 				} else if (!jsonValid) {
-					content = new m.Label({
+					content = new Label({
 						text: "Invalid JSON data"
 					});
 				} else if (!lessValid) {
-					content = new m.Label({
+					content = new Label({
 						text: "Invalid Stylesheet data"
 					});
 				} else {
-					content = new core.HTML().setContent(
+					content = new HTML().setContent(
 							'<style type="text/css">' + less + '</style><div>' + code + '</div>');
 				}
 				this.getView().byId("previewPanel").addContent(content);
@@ -288,7 +291,7 @@ sap.ui.define([
 			const oModel = this.getView().getModel();
 			const bDeleteAllowed = oModel.getProperty("/current/enabled") && oModel.getProperty("/current/inserted");
 			const bListNotEmpty = oModel.getProperty("/templates/length") !== 0;
-			const bNoDialogOpen = m.InstanceManager.getOpenDialogs().length === 0;
+			const bNoDialogOpen = InstanceManager.getOpenDialogs().length === 0;
 			return bDeleteAllowed && bListNotEmpty && bNoDialogOpen;
 		},
 
@@ -328,7 +331,7 @@ sap.ui.define([
 
             var oList = this.getView().byId("templatesTree");
             if (oList.getBinding("items")) {
-                oList.getBinding("items").sort(new model.Sorter("name"));
+                oList.getBinding("items").sort(new Sorter("name"));
             }
 		},
 
@@ -533,7 +536,7 @@ sap.ui.define([
 		},
 
 		onPdfPreview: function() {
-			core.BusyIndicator.show();
+			BusyIndicator.show();
 			var oModel = this.getView().getModel();
 			var jsonData = oModel.getProperty("/current/json");
 			var json = {};
@@ -570,7 +573,7 @@ sap.ui.define([
 			var counter = this.genPdfWaitTries;
 			if (!counter || counter <= 0) {
 				console.log("Wait without success ...");
-				core.BusyIndicator.hide();
+				BusyIndicator.hide();
 				return;
 			}
 			this.genPdfWaitTries = counter - 1;
@@ -583,7 +586,7 @@ sap.ui.define([
 					return;
 				}
 				console.log(data.result);
-				core.BusyIndicator.hide();
+				BusyIndicator.hide();
 
 			    var pdfPreview = window.open("/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.html", "_blank");
                 pdfPreview.onload = function() {
@@ -599,7 +602,7 @@ sap.ui.define([
 		},
 
 		onPdfPreviewError: function(error) {
-			core.BusyIndicator.hide();
+			BusyIndicator.hide();
 			var detail = error;
 			if (error.message) {
 				detail = error.message;
@@ -737,7 +740,7 @@ sap.ui.define([
             var aFilters = [];
             var sQuery = oEvent.getParameter("newValue");
             if (sQuery && sQuery.length > 0) {
-                aFilters.push(new model.Filter("name", model.FilterOperator.Contains, sQuery));
+                aFilters.push(new Filter("name", FilterOperator.Contains, sQuery));
             }
             oList.getBinding("items").filter(aFilters);
 		},
