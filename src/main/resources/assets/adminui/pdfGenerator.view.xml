@@ -1,9 +1,7 @@
 <mvc:View
 	controllerName="io.simplifier.ui5.plugin.pdfPlugin.adminui.pdfGenerator"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns="sap.m"
-	xmlns:core="sap.ui.core"
-	xmlns:admin="io.simplifier.ui5.adminui.controls.editorArea">
+	xmlns="sap.m">
 
 	<Panel width="100%">
 		<content>
@@ -104,64 +102,26 @@
 						</content>
 					</Panel>
 
-					<Panel height="720px" width="100%" headerText="{i18n_pdfplugin>PDFGeneratorContentLabel}">
+					<Panel id="pdfGeneratorContent" height="720px" width="100%"
+						   headerText="{i18n_pdfplugin>PDFGeneratorContentLabel}">
 						<content>
 							<Toolbar>
 								<content>
-									<SegmentedButton>
+									<SegmentedButton selectedKey="html" selectionChange=".onSelectContentToolbarItem">
 										<items>
-											<SegmentedButtonItem text="Body" press=".onHTMLPress" />
-											<SegmentedButtonItem text="Header" press=".onHeaderPress" />
-											<SegmentedButtonItem text="Footer" press=".onFooterPress" />
-											<SegmentedButtonItem text="CSS" press=".onCSSPress" />
-											<SegmentedButtonItem text="JSON (Preview)" press=".onJSONPress" />
+											<SegmentedButtonItem text="Body" key="html"/>
+											<SegmentedButtonItem text="Header" key="header"/>
+											<SegmentedButtonItem text="Footer" key="footer"/>
+											<SegmentedButtonItem text="CSS" key="css"/>
+											<SegmentedButtonItem text="JSON (Preview)" key="json"/>
 										</items>
 									</SegmentedButton>
 									<ToolbarSpacer />
 								</content>
 							</Toolbar>
 
-							<admin:EditorArea
-								id="htmlContent"
-								editorValue="{/current/content}"
-								editorType="html"
-								editorHeight="575px"
-								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange=".onGeneratePreview" />
+							<!-- editors will be inserted here depending on FeatureFlag -->
 
-							<admin:EditorArea
-								id="headerContent"
-								editorValue="{/current/header}"
-								editorType="html"
-								editorHeight="575px"
-								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange=".onGeneratePreview" />
-
-							<admin:EditorArea
-								id="footerContent"
-								editorValue="{/current/footer}"
-								editorType="html"
-								editorHeight="575px"
-								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange=".onGeneratePreview" />
-
-							<admin:EditorArea
-								id="cssContent"
-								visible="false"
-								editorValue="{/current/css}"
-								editorType="css"
-								editorHeight="575px"
-								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange=".onGeneratePreview" />
-
-							<admin:EditorArea
-								id="jsonContent"
-								visible="false"
-								editorValue="{/current/json}"
-								editorType="json"
-								editorHeight="575px"
-								editorEditable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
-								editorLiveChange=".onGeneratePreview" />
 						</content>
 					</Panel>
 

@@ -2,6 +2,9 @@ sap.ui.define([
 	'sap/base/strings/formatMessage',
 	'io/simplifier/ui5/adminui/Util',
 	'io/simplifier/ui5/adminui/modules/AppController',
+	'io/simplifier/ui5/adminui/modules/FeatureFlags',
+	'io/simplifier/ui5/adminui/controls/editorArea/EditorArea',
+	'io/simplifier/ui5/adminui/controls/editorArea/monaco/MonacoEditorArea',
 	'sap/ui/model/json/JSONModel',
 	'sap/ui/model/resource/ResourceModel',
 	'io/simplifier/ui5/adminui/Ajax',
@@ -9,11 +12,13 @@ sap.ui.define([
 	'sap/m/Label',
     'sap/m/InstanceManager',
 	'sap/ui/core/HTML',
+	'sap/ui/core/Element',
 	'sap/ui/core/BusyIndicator',
 	'sap/ui/model/Sorter',
 	'sap/ui/model/Filter',
-	'sap/ui/model/FilterOperator',
-], function(formatMessage, Util, Controller, JSONModel, ResourceModel, Ajax, jQuery, Label, InstanceManager, HTML, BusyIndicator, Sorter, Filter, FilterOperator) {
+	'sap/ui/model/FilterOperator'
+], function(formatMessage, Util, Controller, FeatureFlags, EditorArea, MonacoEditorArea, JSONModel, ResourceModel,
+			Ajax, jQuery, Label, InstanceManager, HTML, Element, BusyIndicator, Sorter, Filter, FilterOperator) {
 	"use strict";
 
 	/*
@@ -61,6 +66,68 @@ sap.ui.define([
 			this.clearPreview();
 		},
 
+		onAfterRendering: function () {
+			const bIsMonacoEditor = FeatureFlags.isActive("Monaco_Editor");
+			const oContentEditorPanel = this.getView().byId("pdfGeneratorContent");
+
+            // to avoid a duplicate id
+			Element.getElementById("htmlContent")?.destroy();
+			Element.getElementById("headerContent")?.destroy();
+			Element.getElementById("footerContent")?.destroy();
+			Element.getElementById("cssContent")?.destroy();
+			Element.getElementById("jsonContent")?.destroy();
+
+			let oHtmlEditor, oHeaderEditor, oFooterEditor, oCssEditor, oJsonEditor;
+			if (bIsMonacoEditor) {
+				oHtmlEditor = this.createMonacoEditorArea("htmlContent", "content", "html");
+				oHeaderEditor = this.createMonacoEditorArea("headerContent", "header", "html");
+				oFooterEditor = this.createMonacoEditorArea("footerContent", "footer", "html");
+				oCssEditor = this.createMonacoEditorArea("cssContent", "css", "css");
+				oJsonEditor = this.createMonacoEditorArea("jsonContent", "json", "json");
+			} else {
+				oHtmlEditor = this.createAceEditorArea("htmlContent", "content", "html");
+				oHeaderEditor = this.createAceEditorArea("headerContent", "header", "html");
+				oFooterEditor = this.createAceEditorArea("footerContent", "footer", "html");
+				oCssEditor = this.createAceEditorArea("cssContent", "css", "css");
+				oJsonEditor = this.createAceEditorArea("jsonContent", "json", "json");
+			}
+			oContentEditorPanel.addContent(oHtmlEditor);
+			oContentEditorPanel.addContent(oHeaderEditor);
+			oContentEditorPanel.addContent(oFooterEditor);
+			oContentEditorPanel.addContent(oCssEditor);
+			oContentEditorPanel.addContent(oJsonEditor);
+
+			Element.getElementById("htmlContent").setProperty("visible", true);
+		},
+
+		createMonacoEditorArea: function(sId, sValueKey, sTypeKey) {
+			 return new MonacoEditorArea(sId, {
+				 value: "{/current/" + sValueKey + "}",
+				 visible: false,
+				 language: sTypeKey,
+				 height: "575px",
+				 showSnippetButton: false,
+				 showFormatButton: "{= ${/current/enabled} && ${/current/loaded}}",
+				 showFindReplaceButton: "{= ${/current/enabled} && ${/current/loaded}}",
+				 showUndoButton: "{= ${/current/enabled} && ${/current/loaded}}",
+				 showRedoButton: "{= ${/current/enabled} && ${/current/loaded}}",
+				 liveChange: this.onGeneratePreview.bind(this),
+				 minimapEnabled: false,
+				 editable:"{= ${/current/enabled} && ${/current/loaded}}"
+			 });
+		},
+
+		createAceEditorArea: function(sId, sValueKey, sTypeKey) {
+		 	return new EditorArea(sId, {
+				editorValue: "{/current/" + sValueKey + "}",
+				visible: false,
+				editorType: sTypeKey,
+				editorHeight: "575px",
+				editorEditable: "{= ${/current/enabled} && ${/current/loaded}}",
+				editorLiveChange: this.onGeneratePreview.bind(this)
+			});
+		},
+
 		createSkeleton: function() {
 
 			var html = 	"<h2>Welcome to the PDF Generator</h2> \n " +
@@ -101,49 +168,18 @@ sap.ui.define([
 			this.getView().byId("templatesContent").setVisible(false);
 			this.getView().byId("fieldsContent").setVisible(true);
 		},
-		/*
-		 * @author Daniel Bieberstein
-		 * onHTMLPress hides the css textarea and shows the html textarea
-		 */
-		onHTMLPress: function(){
-			this.getView().byId("htmlContent").setVisible(true);
-			this.getView().byId("headerContent").setVisible(false);
-			this.getView().byId("footerContent").setVisible(false);
-			this.getView().byId("cssContent").setVisible(false);
-			this.getView().byId("jsonContent").setVisible(false);
-		},
-		onHeaderPress: function() {
-			this.getView().byId("htmlContent").setVisible(false);
-			this.getView().byId("headerContent").setVisible(true);
-			this.getView().byId("footerContent").setVisible(false);
-			this.getView().byId("cssContent").setVisible(false);
-			this.getView().byId("jsonContent").setVisible(false);
-		},
-		onFooterPress: function() {
-			this.getView().byId("htmlContent").setVisible(false);
-			this.getView().byId("headerContent").setVisible(false);
-			this.getView().byId("footerContent").setVisible(true);
-			this.getView().byId("cssContent").setVisible(false);
-			this.getView().byId("jsonContent").setVisible(false);
-		},
-		/*
-		 * @author Daniel Bieberstein
-		 * onCSSPress hides the html textarea and shows the css textarea
-		 */
-		onCSSPress: function(){
-			this.getView().byId("htmlContent").setVisible(false);
-			this.getView().byId("headerContent").setVisible(false);
-			this.getView().byId("footerContent").setVisible(false);
-			this.getView().byId("cssContent").setVisible(true);
-			this.getView().byId("jsonContent").setVisible(false);
-		},
 
-		onJSONPress: function(){
-			this.getView().byId("htmlContent").setVisible(false);
-			this.getView().byId("headerContent").setVisible(false);
-			this.getView().byId("footerContent").setVisible(false);
-			this.getView().byId("cssContent").setVisible(false);
-			this.getView().byId("jsonContent").setVisible(true);
+		onSelectContentToolbarItem: function(oEvent){
+			//set all editors to invisible
+			Element.getElementById("htmlContent").setProperty("visible", false);
+			Element.getElementById("headerContent").setProperty("visible", false);
+			Element.getElementById("footerContent").setProperty("visible", false);
+			Element.getElementById("cssContent").setProperty("visible", false);
+			Element.getElementById("jsonContent").setProperty("visible", false);
+
+			// set selected editor to visible
+			const sSelectedKey = oEvent.getParameter("item").getKey();
+			Element.getElementById(sSelectedKey + "Content").setProperty("visible", true);
 		},
 
 		clearPreview: function() {
@@ -159,27 +195,29 @@ sap.ui.define([
 		 */
 		onGeneratePreview: function (){
 			// TODO: Add Debouncer, to wait until user stops typing?
-			var html = "<main>" + this.getView().byId("htmlContent").getProperty("editorValue") + "</main>";
-			var header = "<header>" +  this.getView().byId("headerContent").getProperty("editorValue") + "</header>";
-			var footer = "<footer>" + this.getView().byId("footerContent").getProperty("editorValue") + "</footer>";
-			var completeHtml = header + html + footer;
-			var css = this.getView().byId("cssContent").getProperty("editorValue");
-			var jsonData = this.getView().byId("jsonContent").getProperty("editorValue");
+
+			const oModel = this.getView().getModel();
+			const sHtml = "<main>" + oModel.getProperty("/current/content") + "</main>";
+			const sHeader = "<header>" + oModel.getProperty("/current/header") + "</header>";
+			const sFooter = "<footer>" + oModel.getProperty("/current/footer") + "</footer>";
+			const sCompleteHtml = sHeader + sHtml + sFooter;
+			const sCss = oModel.getProperty("/current/css");
+			const sJsonData = oModel.getProperty("/current/json");
+
 			this.getView().byId("previewPanel").destroyContent();
 
-			var json = {};
-			var jsonValid = true;
-			if (jsonData !== "") {
+			let json = {};
+			let jsonValid = true;
+			if (sJsonData !== "") {
 				try {
-					json = JSON.parse(jsonData);
+					json = JSON.parse(sJsonData);
 				} catch (e) {
 					jsonValid = false;
 				}
 			}
 
 			// Update fields tree
-			var oModel = this.getView().getModel();
-			var fields = [];
+			const fields = [];
 			if (jsonValid) {
 				jQuery.each(json, function(key, value) {
 					fields.push({'name': key});
@@ -187,27 +225,27 @@ sap.ui.define([
 			}
 			oModel.setProperty("/fields", fields);
 
-			var code = "";
-			var mustacheValid = true;
+			let code = "";
+			let mustacheValid = true;
 			try {
-				code = Mustache.render(completeHtml, json);
+				code = Mustache.render(sCompleteHtml, json);
 			} catch (e) {
 				mustacheValid = false;
 			}
 
-			var previewSelector = '#' + this.getView().byId("previewPanel").sId + " > .sapMPanelContent";
+			const previewSelector = '#' + this.getView().byId("previewPanel").sId + " > .sapMPanelContent";
 
-			less.render(previewSelector + " { " + css + " }", (function(e, output) {
+			less.render(previewSelector + " { " + sCss + " }", (function(e, output) {
 
-				var lessValid = true;
-				var less = "";
+				let lessValid = true;
+				let less = "";
 				if (typeof output !== "undefined" && typeof output.css !== "undefined") {
 					less = output.css;
 				} else {
 					lessValid = false;
 				}
 
-				var content;
+				let content;
 				if (!mustacheValid) {
 					content = new Label({
 						text: "Invalid HTML template"
@@ -260,8 +298,8 @@ sap.ui.define([
 		},
 
 		onDeleteTemplate: function(){
-			var sTemplate = this.getView().getModel().getProperty("/current/templateName");
-            Util.showConfirmationDialog(
+			const sTemplate = this.getView().getModel().getProperty("/current/templateName");
+			Util.showConfirmationDialog(
                 formatMessage("Do you really wish to delete template ''{0}''?", sTemplate),
                 "Delete template",
                 function() {
@@ -280,7 +318,22 @@ sap.ui.define([
 		 * calls the onDeleteTemplate function by pressing "del" on the keyboard
 		 */
 		onKeyboardDelete: function () {
-			this.onDeleteTemplate();
+			const bIsMonacoEditor = FeatureFlags.isActive("Monaco_Editor");
+			const aElementIds = ["htmlContent", "headerContent", "footerContent", "cssContent", "jsonContent"];
+			let bEditorHasFocus = false;
+			if (bIsMonacoEditor){
+				aElementIds.forEach((id) => {
+					const oEditor = Element.getElementById(id + "--monacoEditor");
+					bEditorHasFocus = bEditorHasFocus || (oEditor && 2 === oEditor._oEditor._editorTextFocus._value);
+				});
+			} else {
+				aElementIds.forEach((id) => {
+					bEditorHasFocus = bEditorHasFocus || Element.getElementById(id).getAggregation("_editor")._oEditor.textInput.isFocused();
+				});
+			}
+			if (!bEditorHasFocus) { //only when editor does not have focus
+				this.onDeleteTemplate();
+			}
 		},
 
 		/**
@@ -301,7 +354,7 @@ sap.ui.define([
 		},
 
 		initTemplate: function() {
-			var oModel = this.getView().getModel();
+			const oModel = this.getView().getModel();
 			oModel.setProperty("/current/enabled", false);
 			oModel.setProperty("/current/inserted", false);
 			oModel.setProperty("/current/loaded", false);
@@ -316,8 +369,8 @@ sap.ui.define([
 		},
 
 		onTemplateListRefreshed: function(data) {
-			var oModel = this.getView().getModel();
-			var templates = [];
+			const oModel = this.getView().getModel();
+			const templates = [];
 			if (!data.success) {
 				// no actual successful result
 				this.onTemplateListRefreshFailed(data);
@@ -329,14 +382,14 @@ sap.ui.define([
 			oModel.setProperty("/templates", templates);
 			oModel.setProperty("/current/enabled", true);
 
-            var oList = this.getView().byId("templatesTree");
-            if (oList.getBinding("items")) {
+			const oList = this.getView().byId("templatesTree");
+			if (oList.getBinding("items")) {
                 oList.getBinding("items").sort(new Sorter("name"));
             }
 		},
 
 		onTemplateListRefreshFailed: function(error) {
-			var detail = error;
+			let detail = error;
 			if (error.message) {
 				detail = error.message;
 			}
@@ -507,8 +560,8 @@ sap.ui.define([
 		},
 
 		onTemplateListRefreshedAfterDelete: function(data) {
-			var oModel = this.getView().getModel();
-			var templates = [];
+			const oModel = this.getView().getModel();
+			const templates = [];
 			if (!data.success) {
 				// no actual successful result
 				this.onTemplateListRefreshFailed(data);
@@ -521,35 +574,35 @@ sap.ui.define([
 			oModel.setProperty("/current/enabled", true);
 
 			// Select inserted template in list
-			var oTemplateList = this.getView().byId('templatesTree');
+			const oTemplateList = this.getView().byId('templatesTree');
 			oTemplateList.removeSelections();
 		},
 
 		onTemplateDeleteFailed: function(error) {
-			var detail = error;
+			let detail = error;
 			if (error.message) {
 				detail = error.message;
 			}
 			this.onDisplayError("Error Deleting Template", detail);
-			var oModel = this.getView().getModel();
+			const oModel = this.getView().getModel();
 			oModel.setProperty("/current/enabled", true);
 		},
 
 		onPdfPreview: function() {
 			BusyIndicator.show();
-			var oModel = this.getView().getModel();
-			var jsonData = oModel.getProperty("/current/json");
-			var json = {};
+			const oModel = this.getView().getModel();
+			const jsonData = oModel.getProperty("/current/json");
+			let json = {};
 			if (jsonData !== "") {
 				try {
 					json = JSON.parse(jsonData);
 				} catch (e) {
 				}
 			}
-			var session = "preview";
-			var sessionData = JSON.stringify(json);
-			var sessionKey = "sessiondata/" + session;
-			var templateName = oModel.getProperty("/current/templateName");
+			const session = "preview";
+			const sessionData = JSON.stringify(json);
+			const sessionKey = "sessiondata/" + session;
+			const templateName = oModel.getProperty("/current/templateName");
 			console.log("Try Generate with " + templateName);
 
 			this.apiPutKeyValueStore(sessionKey, sessionData, function(putKvData) {
@@ -579,7 +632,7 @@ sap.ui.define([
 			this.genPdfWaitTries = counter - 1;
 
 			console.log("Wait " + counter + " ...");
-			var key = "pdf/" + this.previewJobId + ".pdf";
+			const key = "pdf/" + this.previewJobId + ".pdf";
 			this.apiGetKeyValueStore(key, function(data) {
 				if (!data.success) {
 					this.onWaitForGeneratedPdfError(data);
@@ -588,8 +641,8 @@ sap.ui.define([
 				console.log(data.result);
 				BusyIndicator.hide();
 
-			    var pdfPreview = window.open("/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.html", "_blank");
-                pdfPreview.onload = function() {
+				const pdfPreview = window.open("/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.html", "_blank");
+				pdfPreview.onload = function() {
                     pdfPreview.postMessage(data.result);
                 };
 
@@ -603,7 +656,7 @@ sap.ui.define([
 
 		onPdfPreviewError: function(error) {
 			BusyIndicator.hide();
-			var detail = error;
+			let detail = error;
 			if (error.message) {
 				detail = error.message;
 			}
@@ -629,7 +682,7 @@ sap.ui.define([
 		},
 
 		apiRequest: function(urlSuffix, data, callback, errorCallback) {
-			var url = "/client/1.0/PLUGIN/pdfPlugin/" + urlSuffix;
+			const url = "/client/1.0/PLUGIN/pdfPlugin/" + urlSuffix;
 			var request = {
 				'username' : this.apiGetUsername(),
 				'password' : this.apiGetPassword(),
