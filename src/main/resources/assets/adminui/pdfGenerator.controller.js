@@ -96,31 +96,29 @@ sap.ui.define([
 			oContentEditorPanel.addContent(oFooterEditor);
 			oContentEditorPanel.addContent(oCssEditor);
 			oContentEditorPanel.addContent(oJsonEditor);
-
-			Element.getElementById("htmlContent").setProperty("visible", true);
 		},
 
 		createMonacoEditorArea: function(sId, sValueKey, sTypeKey) {
 			 return new MonacoEditorArea(sId, {
 				 value: "{/current/" + sValueKey + "}",
-				 visible: false,
+				 visible: sId === "htmlContent",
 				 language: sTypeKey,
 				 height: "575px",
+				 minimapEnabled: false,
 				 showSnippetButton: false,
 				 showFormatButton: "{= ${/current/enabled} && ${/current/loaded}}",
 				 showFindReplaceButton: "{= ${/current/enabled} && ${/current/loaded}}",
 				 showUndoButton: "{= ${/current/enabled} && ${/current/loaded}}",
 				 showRedoButton: "{= ${/current/enabled} && ${/current/loaded}}",
-				 liveChange: this.onGeneratePreview.bind(this),
-				 minimapEnabled: false,
-				 editable:"{= ${/current/enabled} && ${/current/loaded}}"
+				 editable: "{= ${/current/enabled} && ${/current/loaded}}",
+				 liveChange: this.onGeneratePreview.bind(this)
 			 });
 		},
 
 		createAceEditorArea: function(sId, sValueKey, sTypeKey) {
 		 	return new EditorArea(sId, {
 				editorValue: "{/current/" + sValueKey + "}",
-				visible: false,
+				visible: sId === "htmlContent",
 				editorType: sTypeKey,
 				editorHeight: "575px",
 				editorEditable: "{= ${/current/enabled} && ${/current/loaded}}",
@@ -324,7 +322,7 @@ sap.ui.define([
 			if (bIsMonacoEditor){
 				aElementIds.forEach((id) => {
 					const oEditor = Element.getElementById(id + "--monacoEditor");
-					bEditorHasFocus = bEditorHasFocus || (oEditor && 2 === oEditor._oEditor._editorTextFocus._value);
+					bEditorHasFocus = bEditorHasFocus || (oEditor && oEditor._oEditor && oEditor._oEditor.hasTextFocus());
 				});
 			} else {
 				aElementIds.forEach((id) => {
