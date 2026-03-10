@@ -296,8 +296,8 @@ sap.ui.define([
 		},
 
 		onDeleteTemplate: function(){
-			const sTemplate = this.getView().getModel().getProperty("/current/templateName");
-			Util.showConfirmationDialog(
+			var sTemplate = this.getView().getModel().getProperty("/current/templateName");
+            Util.showConfirmationDialog(
                 formatMessage("Do you really wish to delete template ''{0}''?", sTemplate),
                 "Delete template",
                 function() {
@@ -352,7 +352,7 @@ sap.ui.define([
 		},
 
 		initTemplate: function() {
-			const oModel = this.getView().getModel();
+			var oModel = this.getView().getModel();
 			oModel.setProperty("/current/enabled", false);
 			oModel.setProperty("/current/inserted", false);
 			oModel.setProperty("/current/loaded", false);
@@ -367,8 +367,8 @@ sap.ui.define([
 		},
 
 		onTemplateListRefreshed: function(data) {
-			const oModel = this.getView().getModel();
-			const templates = [];
+			var oModel = this.getView().getModel();
+			var templates = [];
 			if (!data.success) {
 				// no actual successful result
 				this.onTemplateListRefreshFailed(data);
@@ -380,14 +380,14 @@ sap.ui.define([
 			oModel.setProperty("/templates", templates);
 			oModel.setProperty("/current/enabled", true);
 
-			const oList = this.getView().byId("templatesTree");
-			if (oList.getBinding("items")) {
+            var oList = this.getView().byId("templatesTree");
+            if (oList.getBinding("items")) {
                 oList.getBinding("items").sort(new Sorter("name"));
             }
 		},
 
 		onTemplateListRefreshFailed: function(error) {
-			let detail = error;
+			var detail = error;
 			if (error.message) {
 				detail = error.message;
 			}
@@ -558,8 +558,8 @@ sap.ui.define([
 		},
 
 		onTemplateListRefreshedAfterDelete: function(data) {
-			const oModel = this.getView().getModel();
-			const templates = [];
+			var oModel = this.getView().getModel();
+			var templates = [];
 			if (!data.success) {
 				// no actual successful result
 				this.onTemplateListRefreshFailed(data);
@@ -572,35 +572,35 @@ sap.ui.define([
 			oModel.setProperty("/current/enabled", true);
 
 			// Select inserted template in list
-			const oTemplateList = this.getView().byId('templatesTree');
+			var oTemplateList = this.getView().byId('templatesTree');
 			oTemplateList.removeSelections();
 		},
 
 		onTemplateDeleteFailed: function(error) {
-			let detail = error;
+			var detail = error;
 			if (error.message) {
 				detail = error.message;
 			}
 			this.onDisplayError("Error Deleting Template", detail);
-			const oModel = this.getView().getModel();
+			var oModel = this.getView().getModel();
 			oModel.setProperty("/current/enabled", true);
 		},
 
 		onPdfPreview: function() {
 			BusyIndicator.show();
-			const oModel = this.getView().getModel();
-			const jsonData = oModel.getProperty("/current/json");
-			let json = {};
+			var oModel = this.getView().getModel();
+			var jsonData = oModel.getProperty("/current/json");
+			var json = {};
 			if (jsonData !== "") {
 				try {
 					json = JSON.parse(jsonData);
 				} catch (e) {
 				}
 			}
-			const session = "preview";
-			const sessionData = JSON.stringify(json);
-			const sessionKey = "sessiondata/" + session;
-			const templateName = oModel.getProperty("/current/templateName");
+			var session = "preview";
+			var sessionData = JSON.stringify(json);
+			var sessionKey = "sessiondata/" + session;
+			var templateName = oModel.getProperty("/current/templateName");
 			console.log("Try Generate with " + templateName);
 
 			this.apiPutKeyValueStore(sessionKey, sessionData, function(putKvData) {
@@ -630,7 +630,7 @@ sap.ui.define([
 			this.genPdfWaitTries = counter - 1;
 
 			console.log("Wait " + counter + " ...");
-			const key = "pdf/" + this.previewJobId + ".pdf";
+			var key = "pdf/" + this.previewJobId + ".pdf";
 			this.apiGetKeyValueStore(key, function(data) {
 				if (!data.success) {
 					this.onWaitForGeneratedPdfError(data);
@@ -639,8 +639,8 @@ sap.ui.define([
 				console.log(data.result);
 				BusyIndicator.hide();
 
-				const pdfPreview = window.open("/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.html", "_blank");
-				pdfPreview.onload = function() {
+			    var pdfPreview = window.open("/client/1.0/PLUGINASSET/pdfPlugin/adminui/pdf.html", "_blank");
+                pdfPreview.onload = function() {
                     pdfPreview.postMessage(data.result);
                 };
 
@@ -654,7 +654,7 @@ sap.ui.define([
 
 		onPdfPreviewError: function(error) {
 			BusyIndicator.hide();
-			let detail = error;
+			var detail = error;
 			if (error.message) {
 				detail = error.message;
 			}
@@ -680,7 +680,7 @@ sap.ui.define([
 		},
 
 		apiRequest: function(urlSuffix, data, callback, errorCallback) {
-			const url = "/client/1.0/PLUGIN/pdfPlugin/" + urlSuffix;
+			var url = "/client/1.0/PLUGIN/pdfPlugin/" + urlSuffix;
 			var request = {
 				'username' : this.apiGetUsername(),
 				'password' : this.apiGetPassword(),
