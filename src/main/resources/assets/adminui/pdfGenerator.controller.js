@@ -2,9 +2,6 @@ sap.ui.define([
 	'sap/base/strings/formatMessage',
 	'io/simplifier/ui5/adminui/Util',
 	'io/simplifier/ui5/adminui/modules/AppController',
-	'io/simplifier/ui5/adminui/modules/FeatureFlags',
-	'io/simplifier/ui5/adminui/controls/editorArea/EditorArea',
-	'io/simplifier/ui5/adminui/controls/editorArea/monaco/MonacoEditorArea',
 	'sap/ui/model/json/JSONModel',
 	'sap/ui/model/resource/ResourceModel',
 	'io/simplifier/ui5/adminui/Ajax',
@@ -12,13 +9,12 @@ sap.ui.define([
 	'sap/m/Label',
     'sap/m/InstanceManager',
 	'sap/ui/core/HTML',
-	'sap/ui/core/Element',
 	'sap/ui/core/BusyIndicator',
 	'sap/ui/model/Sorter',
 	'sap/ui/model/Filter',
 	'sap/ui/model/FilterOperator'
-], function(formatMessage, Util, Controller, FeatureFlags, EditorArea, MonacoEditorArea, JSONModel, ResourceModel,
-			Ajax, jQuery, Label, InstanceManager, HTML, Element, BusyIndicator, Sorter, Filter, FilterOperator) {
+], function(formatMessage, Util, Controller, JSONModel, ResourceModel, Ajax, jQuery,
+			Label, InstanceManager, HTML, BusyIndicator, Sorter, Filter, FilterOperator) {
 	"use strict";
 
 	/*
@@ -66,66 +62,6 @@ sap.ui.define([
 			this.clearPreview();
 		},
 
-		onAfterRendering: function () {
-			const bIsMonacoEditor = FeatureFlags.isActive("Monaco_Editor");
-			const oContentEditorPanel = this.getView().byId("pdfGeneratorContent");
-
-            // to avoid a duplicate id
-			Element.getElementById("htmlContent")?.destroy();
-			Element.getElementById("headerContent")?.destroy();
-			Element.getElementById("footerContent")?.destroy();
-			Element.getElementById("cssContent")?.destroy();
-			Element.getElementById("jsonContent")?.destroy();
-
-			let oHtmlEditor, oHeaderEditor, oFooterEditor, oCssEditor, oJsonEditor;
-			if (bIsMonacoEditor) {
-				oHtmlEditor = this.createMonacoEditorArea("htmlContent", "content", "html");
-				oHeaderEditor = this.createMonacoEditorArea("headerContent", "header", "html");
-				oFooterEditor = this.createMonacoEditorArea("footerContent", "footer", "html");
-				oCssEditor = this.createMonacoEditorArea("cssContent", "css", "css");
-				oJsonEditor = this.createMonacoEditorArea("jsonContent", "json", "json");
-			} else {
-				oHtmlEditor = this.createAceEditorArea("htmlContent", "content", "html");
-				oHeaderEditor = this.createAceEditorArea("headerContent", "header", "html");
-				oFooterEditor = this.createAceEditorArea("footerContent", "footer", "html");
-				oCssEditor = this.createAceEditorArea("cssContent", "css", "css");
-				oJsonEditor = this.createAceEditorArea("jsonContent", "json", "json");
-			}
-			oContentEditorPanel.addContent(oHtmlEditor);
-			oContentEditorPanel.addContent(oHeaderEditor);
-			oContentEditorPanel.addContent(oFooterEditor);
-			oContentEditorPanel.addContent(oCssEditor);
-			oContentEditorPanel.addContent(oJsonEditor);
-		},
-
-		createMonacoEditorArea: function(sId, sValueKey, sTypeKey) {
-			 return new MonacoEditorArea(sId, {
-				 value: "{/current/" + sValueKey + "}",
-				 visible: sId === "htmlContent",
-				 language: sTypeKey,
-				 height: "575px",
-				 minimapEnabled: false,
-				 showSnippetButton: false,
-				 showFormatButton: "{= ${/current/enabled} && ${/current/loaded}}",
-				 showFindReplaceButton: "{= ${/current/enabled} && ${/current/loaded}}",
-				 showUndoButton: "{= ${/current/enabled} && ${/current/loaded}}",
-				 showRedoButton: "{= ${/current/enabled} && ${/current/loaded}}",
-				 editable: "{= ${/current/enabled} && ${/current/loaded}}",
-				 liveChange: this.onGeneratePreview.bind(this)
-			 });
-		},
-
-		createAceEditorArea: function(sId, sValueKey, sTypeKey) {
-		 	return new EditorArea(sId, {
-				editorValue: "{/current/" + sValueKey + "}",
-				visible: sId === "htmlContent",
-				editorType: sTypeKey,
-				editorHeight: "575px",
-				editorEditable: "{= ${/current/enabled} && ${/current/loaded}}",
-				editorLiveChange: this.onGeneratePreview.bind(this)
-			});
-		},
-
 		createSkeleton: function() {
 
 			var html = 	"<h2>Welcome to the PDF Generator</h2> \n " +
@@ -169,15 +105,15 @@ sap.ui.define([
 
 		onSelectContentToolbarItem: function(oEvent){
 			//set all editors to invisible
-			Element.getElementById("htmlContent").setProperty("visible", false);
-			Element.getElementById("headerContent").setProperty("visible", false);
-			Element.getElementById("footerContent").setProperty("visible", false);
-			Element.getElementById("cssContent").setProperty("visible", false);
-			Element.getElementById("jsonContent").setProperty("visible", false);
+			this.getView().byId("htmlContent").setVisible(false);
+			this.getView().byId("headerContent").setVisible(false);
+			this.getView().byId("footerContent").setVisible(false);
+			this.getView().byId("cssContent").setVisible(false);
+			this.getView().byId("jsonContent").setVisible(false);
 
 			// set selected editor to visible
 			const sSelectedKey = oEvent.getParameter("item").getKey();
-			Element.getElementById(sSelectedKey + "Content").setProperty("visible", true);
+			this.getView().byId(sSelectedKey + "Content").setVisible(true);
 		},
 
 		clearPreview: function() {
@@ -201,6 +137,15 @@ sap.ui.define([
 			const sCompleteHtml = sHeader + sHtml + sFooter;
 			const sCss = oModel.getProperty("/current/css");
 			const sJsonData = oModel.getProperty("/current/json");
+
+            //TODO what to use: model props or view editor props
+			var html = "<main>" + this.getView().byId("htmlContent").getProperty("value") + "</main>";
+			var header = "<header>" +  this.getView().byId("headerContent").getProperty("value") + "</header>";
+			var footer = "<footer>" + this.getView().byId("footerContent").getProperty("value") + "</footer>";
+			var completeHtml = header + html + footer;
+			var css = this.getView().byId("cssContent").getProperty("value");
+			var jsonData = this.getView().byId("jsonContent").getProperty("value");
+
 
 			this.getView().byId("previewPanel").destroyContent();
 
@@ -316,19 +261,12 @@ sap.ui.define([
 		 * calls the onDeleteTemplate function by pressing "del" on the keyboard
 		 */
 		onKeyboardDelete: function () {
-			const bIsMonacoEditor = FeatureFlags.isActive("Monaco_Editor");
 			const aElementIds = ["htmlContent", "headerContent", "footerContent", "cssContent", "jsonContent"];
 			let bEditorHasFocus = false;
-			if (bIsMonacoEditor){
-				aElementIds.forEach((id) => {
-					const oEditor = Element.getElementById(id + "--monacoEditor");
-					bEditorHasFocus = bEditorHasFocus || (oEditor && oEditor._oEditor && oEditor._oEditor.hasTextFocus());
-				});
-			} else {
-				aElementIds.forEach((id) => {
-					bEditorHasFocus = bEditorHasFocus || Element.getElementById(id).getAggregation("_editor")._oEditor.textInput.isFocused();
-				});
-			}
+			aElementIds.forEach((id) => {
+				const oEditor = this.getView().byId(id + "--monacoEditor");
+				bEditorHasFocus = bEditorHasFocus || (oEditor && oEditor._oEditor && oEditor._oEditor.hasTextFocus());
+			});
 			if (!bEditorHasFocus) { //only when editor does not have focus
 				this.onDeleteTemplate();
 			}
