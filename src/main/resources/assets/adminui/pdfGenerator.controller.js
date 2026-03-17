@@ -32,13 +32,8 @@ sap.ui.define([
 		onInit: function() {
 			Controller.prototype.onInit.apply(this, arguments);  // call super.onInit()
 
-			// Load mustache
-			var mustacheUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/mustache.min.js";
-			jQuery.getScript(mustacheUrl, function(){});
-
-			// Load LESS
-			var lessUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/less.min.js";
-			jQuery.getScript(lessUrl, function(){});
+			this.loadMustache();
+			this.loadLess();
 
 			var oData = {
 				"templates": [],
@@ -64,6 +59,25 @@ sap.ui.define([
 
 			this.refreshTemplates();
 			this.clearPreview();
+		},
+
+		loadMustache: function() {
+			// Load mustache
+			const sMustacheUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/mustache.min.js";
+			jQuery.getScript(sMustacheUrl, function(){});
+		},
+
+		loadLess: function() {
+			// Load LESS
+			const sLessUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/less.min.js";
+			// claude's solution for solving issue https://stackoverflow.com/questions/55057425/can-only-have-one-anonymous-define-call-per-script-file:
+			// Temporarily hide AMD's define so less.min.js registers as a global (window.less)
+			// instead of calling anonymous define(), which causes a RequireJS conflict.
+			const _define = window.define;
+			window.define = undefined;
+			jQuery.getScript(sLessUrl, function() {
+				window.define = _define;
+			});
 		},
 
 		onAfterRendering: function () {
