@@ -110,6 +110,20 @@ sap.ui.define([
 			oContentEditorPanel.addContent(oFooterEditor);
 			oContentEditorPanel.addContent(oCssEditor);
 			oContentEditorPanel.addContent(oJsonEditor);
+
+			// A focusin capture listener blocks any Monaco element from gaining focus for 1 second
+			// after the editors are created, then self-removes.
+			if (bIsMonacoEditor) {
+				const onMonacoFocusIn = function(event) {
+					if (event.target.closest && event.target.closest('.monaco-editor')) {
+						event.target.blur();
+					}
+				};
+				document.addEventListener('focusin', onMonacoFocusIn, true);
+				setTimeout(function() {
+					document.removeEventListener('focusin', onMonacoFocusIn, true);
+				}, 1000);
+			}
 		},
 
 		createMonacoEditorArea: function(sId, sValueKey, sTypeKey) {
