@@ -68,15 +68,22 @@ sap.ui.define([
 		},
 
 		loadLess: function() {
-			// Load LESS
 			const sLessUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/less.min.js";
-			// claude's solution for solving issue https://stackoverflow.com/questions/55057425/can-only-have-one-anonymous-define-call-per-script-file:
-			// Temporarily hide AMD's define so less.min.js registers as a global (window.less)
-			// instead of calling anonymous define(), which causes a RequireJS conflict.
-			const _define = window.define;
-			window.define = undefined;
-			jQuery.getScript(sLessUrl, function() {
-				window.define = _define;
+			// Fetch less.js as text, then execute it synchronously with define/require
+			// hidden. This avoids the race condition of jQuery.getScript (async) and monaco define
+			fetch(sLessUrl).then((response) => {
+				return response.text();
+			}).then((sSource) => {
+				const fnDefine = window.define;
+				const fnRequire = window.require;
+				window.define = undefined;
+				window.require = undefined;
+				try {
+					new Function(sSource)();
+				} finally {
+					window.define = fnDefine;
+					window.require = fnRequire;
+				}
 			});
 		},
 
