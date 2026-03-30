@@ -62,9 +62,22 @@ sap.ui.define([
 		},
 
 		loadMustache: function() {
-			// Load mustache
+			// Load mustache synchronously with define/require hidden to avoid AMD conflict with Monaco
 			const sMustacheUrl = "/client/1.0/PLUGINASSET/pdfPlugin/adminui/mustache.min.js";
-			jQuery.getScript(sMustacheUrl, function(){});
+			fetch(sMustacheUrl).then((response) => {
+				return response.text();
+			}).then((sSource) => {
+				const fnDefine = window.define;
+				const fnRequire = window.require;
+				window.define = undefined;
+				window.require = undefined;
+				try {
+					new Function(sSource)();
+				} finally {
+					window.define = fnDefine;
+					window.require = fnRequire;
+				}
+			});
 		},
 
 		loadLess: function() {
