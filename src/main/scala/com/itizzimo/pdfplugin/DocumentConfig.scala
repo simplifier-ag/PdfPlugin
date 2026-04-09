@@ -42,12 +42,48 @@ object DocumentConfig extends PluginLogger {
   case class RepeatableStringMapParamMapping(param: Parameter[Map[String, String]]) extends ParamMapping
 
   /**
+   * Config parameter names (JSON/CLI kebab-case) that accept URLs or filesystem paths
+   * and must never be passed to wkhtmltopdf from caller-supplied config.
+   */
+  private val urlParamBlocklist: Set[String] = Set(
+    "proxy",
+    "cookie-jar",
+    "user-style-sheet",
+    "checkbox-svg",
+    "radiobutton-svg",
+    "ssl-crt-path",
+    "ssl-key-path",
+    "cache-dir",
+    "dump-outline",
+    "allow",
+    "bypass-proxy-for",
+    "run-script",
+    "post-file"
+  )
+
+  /**
+   * Returns true if the given string value looks like a URL or filesystem path.
+   * Used as a second-pass filter after the key blocklist.
+   */
+  private[pdfplugin] def isUrlOrPath(value: String): Boolean =
+    value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("ftp://") ||
+    value.startsWith("file://") ||
+    value.startsWith("data:") ||
+    value.startsWith("/") ||
+    value.startsWith("./") ||
+    value.startsWith("../") ||
+    value.startsWith("\\\\") ||
+    value.matches("[A-Za-z]:\\\\.*")
+
+  /**
    *  Read feature flag: wkhtmltopdf is allowed to execute server side javascript
    */
   def getJavascriptEnabled(config: Config): Boolean = {
     // plugin-base does not read config via resolve(), so emulate the following behavior:
     val enabled = sys.env.get("PDFPLUGIN_SECURITY_ALLOW_JAVASCRIPT").map(_.toLowerCase()) flatMap {
-      // use boolean string from from env variable
+      // use boolean string from env variable
       case "true" => Some(true)
       case "false" => Some(false)
       case _ => None
@@ -62,6 +98,21 @@ object DocumentConfig extends PluginLogger {
       log.warn("Unsafe Javascript execution is currently enabled!")
     }
     enabled
+  }
+
+  /**
+   * Read the proxy address for wkhtmltopdf from the application config.
+   * Precedence: PDFPLUGIN_SECURITY_PROXY env var > security.proxy config key > "localhost:65535" default.
+   * The default blocks outbound requests when no proxy is explicitly configured.
+   */
+  def getProxyFromConfig(config: Config): String = {
+    val proxy = sys.env.get("PDFPLUGIN_SECURITY_PROXY").filter(_.nonEmpty) orElse {
+      Try(config.getString("security.proxy")).toOption.filter(_.nonEmpty)
+    } getOrElse {
+      "localhost:65535"
+    }
+    log.warn(s"wkhtmltopdf proxy set to: $proxy")
+    proxy
   }
 
   /**
@@ -226,9 +277,21 @@ object DocumentConfig extends PluginLogger {
         def initFromJson(jObj: JObject): Unit = {
           jObj.values.foreach {
             case (name, value) =>
-              paramsByName.get(name) match {
-                case None => log.warn(s"Configuration setting '$name' not recognized.")
-                case Some(mapping) => setParam(mapping, value)
+              if (urlParamBlocklist.contains(name)) {
+                log.warn(s"Configuration parameter '$name' is blocked for security reasons and will be ignored.")
+              } else {
+                val isBlockedValue = value match {
+                  case s: String if isUrlOrPath(s) =>
+                    log.warn(s"Configuration parameter '$name' contains a URL or path value and will be ignored.")
+                    true
+                  case _ => false
+                }
+                if (!isBlockedValue) {
+                  paramsByName.get(name) match {
+                    case None => log.warn(s"Configuration setting '$name' not recognized.")
+                    case Some(mapping) => setParam(mapping, value)
+                  }
+                }
               }
           }
         }
