@@ -101,6 +101,13 @@ object DocumentConfig extends PluginLogger {
   }
 
   /**
+   * Read the bypass-proxy-for value from the VIRTUAL_HOST environment variable.
+   * Returns None when VIRTUAL_HOST is absent or empty.
+   */
+  def getBypassProxyForFromConfig(env: Map[String, String] = sys.env): Option[String] =
+    env.get("VIRTUAL_HOST").filter(_.nonEmpty)
+
+  /**
    * Read the proxy address for wkhtmltopdf from the application config.
    * Precedence: PDFPLUGIN_SECURITY_PROXY env var > security.proxy config key > "localhost:65535" default.
    * The default blocks outbound requests when no proxy is explicitly configured.

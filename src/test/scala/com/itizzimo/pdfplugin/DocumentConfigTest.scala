@@ -168,6 +168,22 @@ class DocumentConfigTest extends AnyWordSpecLike with Matchers {
 
     }
 
+    "getBypassProxyForFromConfig" should {
+
+      "return Some(value) when VIRTUAL_HOST is set" in {
+        DocumentConfig.getBypassProxyForFromConfig(Map("VIRTUAL_HOST" -> "myhost.example.com")) should be(Some("myhost.example.com"))
+      }
+
+      "return None when VIRTUAL_HOST is absent" in {
+        DocumentConfig.getBypassProxyForFromConfig(Map.empty) should be(None)
+      }
+
+      "return None when VIRTUAL_HOST is empty string" in {
+        DocumentConfig.getBypassProxyForFromConfig(Map("VIRTUAL_HOST" -> "")) should be(None)
+      }
+
+    }
+
     "getProxyFromConfig" should {
 
       "return the configured proxy address from config" in {
