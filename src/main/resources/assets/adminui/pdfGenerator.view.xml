@@ -1,7 +1,8 @@
 <mvc:View
 	controllerName="io.simplifier.ui5.plugin.pdfPlugin.adminui.pdfGenerator"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns="sap.m">
+	xmlns="sap.m"
+	xmlns:monacoEditorArea="io.simplifier.ui5.adminui.controls.editorArea.monaco">
 
 	<Panel width="100%">
 		<content>
@@ -120,7 +121,84 @@
 								</content>
 							</Toolbar>
 
-							<!-- editors will be inserted here depending on FeatureFlag -->
+							<monacoEditorArea:MonacoEditorArea
+								id="htmlContent"
+								value="{/current/content}"
+								language="html"
+								height="575px"
+								minimapEnabled="false"
+								showSnippetButton="false"
+								showFormatButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showFindReplaceButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showUndoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showRedoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								focusOnReady="false"
+								liveChange=".onGeneratePreview"/>
+
+							<monacoEditorArea:MonacoEditorArea
+								id="headerContent"
+								value="{/current/header}"
+								visible="false"
+								language="html"
+								height="575px"
+								minimapEnabled="false"
+								showSnippetButton="false"
+								showFormatButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showFindReplaceButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showUndoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showRedoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								focusOnReady="false"
+								liveChange=".onGeneratePreview"/>
+
+							<monacoEditorArea:MonacoEditorArea
+								id="footerContent"
+								value="{/current/footer}"
+								visible="false"
+								language="html"
+								height="575px"
+								minimapEnabled="false"
+								showSnippetButton="false"
+								showFormatButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showFindReplaceButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showUndoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showRedoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								focusOnReady="false"
+								liveChange=".onGeneratePreview"/>
+
+							<monacoEditorArea:MonacoEditorArea
+								id="cssContent"
+								value="{/current/css}"
+								visible="false"
+								language="css"
+								height="575px"
+								minimapEnabled="false"
+								showSnippetButton="false"
+								showFormatButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showFindReplaceButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showUndoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showRedoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								focusOnReady="false"
+								liveChange=".onGeneratePreview"/>
+
+							<monacoEditorArea:MonacoEditorArea
+								id="jsonContent"
+								value="{/current/json}"
+								visible="false"
+								language="json"
+								height="575px"
+								minimapEnabled="false"
+								showSnippetButton="false"
+								showFormatButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showFindReplaceButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showUndoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								showRedoButton="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								editable="{= ${/current/enabled} &amp;&amp; ${/current/loaded}}"
+								focusOnReady="false"
+								liveChange=".onGeneratePreview"/>
 
 						</content>
 					</Panel>
