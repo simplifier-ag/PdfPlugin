@@ -204,7 +204,7 @@ class GenerationController(keyValueStoreCommunication: KeyValueStoreCommunicatio
     }
     val pdfConfig = getPdfConfigFromJSON(pdfConfigJson, getJavascriptEnabled(this.config))
     pdfConfig.proxy := getProxyFromConfig(this.config)
-    getBypassProxyForFromConfig().foreach { host => pdfConfig.bypassProxyFor := Seq(host) }
+    pdfConfig.bypassProxyFor := getBypassProxyForFromConfig()
     val hasCustomHeader = headerPathOpt.isDefined && !pdfConfig.hasHeaderParams
     val hasCustomFooter = footerPathOpt.isDefined && !pdfConfig.hasFooterParams
     if(hasCustomHeader) {

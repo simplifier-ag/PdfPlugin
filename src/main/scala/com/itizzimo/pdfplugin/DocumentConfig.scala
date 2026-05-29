@@ -101,11 +101,14 @@ object DocumentConfig extends PluginLogger {
   }
 
   /**
-   * Read the bypass-proxy-for value from the VIRTUAL_HOST environment variable.
-   * Returns None when VIRTUAL_HOST is absent or empty.
+   * Build the bypass-proxy-for list for wkhtmltopdf.
+   * Always includes "localhost"; also adds VIRTUAL_HOST when set.
+   * Each entry maps to a separate --bypass-proxy-for flag (the option is repeatable).
    */
-  def getBypassProxyForFromConfig(env: Map[String, String] = sys.env): Option[String] =
-    env.get("VIRTUAL_HOST").filter(_.nonEmpty)
+  def getBypassProxyForFromConfig(env: Map[String, String] = sys.env): Seq[String] = {
+    val virtualHost = env.get("VIRTUAL_HOST").filter(_.nonEmpty).toSeq
+    Seq("localhost") ++ virtualHost
+  }
 
   /**
    * Read the proxy address for wkhtmltopdf from the application config.
