@@ -1,6 +1,9 @@
 
 plugin {
     registration {
+        # Address of the Simplifier AppServer. The plugin reads "exposedHost"; "host" is kept for
+        # backwards compatibility with older configurations and is not evaluated.
+        exposedHost = "127.0.0.1"
         host = "127.0.0.1"
         port = 8085
     }
@@ -29,7 +32,30 @@ pdfPlugin {
     tempDir = "tmp"
     wkhtmltopdf = "/usr/bin/wkhtmltopdf"
     clearTempFiles = true
+
+    # Maximum runtime of a single wkhtmltopdf call in seconds. After this, the process is
+    # forcibly destroyed and the job fails. Must be shorter than plugin.timeoutSeconds;
+    # defaults to 90% of it when not set.
+    # conversionTimeoutSeconds = 120
 }
+
+# Connections the plugin may hold open towards the AppServer at once. akka's default of 4 is
+# too small for asset downloads: a template with more than four images, or a few slow ones,
+# leaves later fetches waiting for a pool slot instead of talking to the AppServer.
+akka.http.host-connection-pool.max-connections = 32
+
+# Reclaims a connection whose response never arrives. The plugin cancels an asset download
+# itself once its budget expires, but only after the response headers are in - before that there
+# is nothing to cancel, and without this key the slot is held for akka's default of 60 s. Keep
+# this equal to plugin.timeoutSeconds: it applies to every connection the plugin opens towards
+# the AppServer, not only to asset downloads. The unit is required - a bare number is read as
+# milliseconds.
+akka.http.client.idle-timeout = 300 s
+
+# When the idle timeout above closes a connection mid-request, the pool retries the (idempotent)
+# GET. Against an AppServer that is already slow that multiplies the load rather than relieving
+# it - measured: one stalled asset produced five upstream requests.
+akka.http.host-connection-pool.max-retries = 0
 
 akka.http.parsing.max-to-strict-bytes = 15m
 akka.http.client.parsing.max-content-length = 15m

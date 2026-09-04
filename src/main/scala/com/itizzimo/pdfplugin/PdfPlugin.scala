@@ -1,5 +1,6 @@
 package com.itizzimo.pdfplugin
 
+import com.itizzimo.pdfplugin.helpers.AppServerCommunication
 import com.itizzimo.pdfplugin.interfaces._
 import com.itizzimo.pdfplugin.permission.PdfPluginPermission
 import io.simplifier.pluginbase._
@@ -27,6 +28,10 @@ abstract class PdfPluginLogic extends SimplifierPluginLogic(Defaults.PLUGIN_DESC
   override def pluginPermissions: Seq[PluginPermissionObject] = Seq(pluginPermission)
 
   override def startPluginServices(basicState: SimplifierPlugin.BasicState): Future[PluginBaseHttpService] = Future {
+    // akka has already read these when it built the actor system, so this reports rather than
+    // corrects - but an installation whose settings.conf predates the keys runs on the defaults
+    // that stall the plugin, and nothing else says so.
+    AppServerCommunication.logConnectionSettings(basicState.config, basicState.settings.timeout.duration)
     val slotInterface = Some(SlotInterface(basicState.dispatcher, basicState.settings, basicState.config,
       basicState.pluginDescription, pluginPermission))
     val proxyInterface = None

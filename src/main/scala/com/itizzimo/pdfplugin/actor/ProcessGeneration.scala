@@ -24,7 +24,6 @@ import io.github.simplifier_ag.scala.spdf.PdfConfig
 import org.apache.pdfbox.pdmodel.PDDocument
 
 import java.io.ByteArrayOutputStream
-import java.util.concurrent.TimeUnit.HOURS
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -42,8 +41,14 @@ class ProcessGeneration(keyValueStoreCommunication: KeyValueStoreCommunication,
 
   import ProcessGeneration._
 
-  /** Timeout for each sub-task. */
-  implicit val timeout: Timeout = Timeout(1, HOURS)
+  /**
+    * Timeout for each sub-task, bounded by the request timeout (`plugin.timeoutSeconds`).
+    *
+    * An ask timeout does not cancel the step it gives up on, so this value decides how long an
+    * abandoned job keeps holding its actor tree, its template engine and the PDF data in memory.
+    * It must therefore stay in the same order of magnitude as the timeout the caller itself uses.
+    */
+  implicit val timeout: Timeout = pluginSettings.timeout
 
   implicit val executionContext: ExecutionContextExecutor = context.system.dispatcher
 
@@ -61,7 +66,7 @@ class ProcessGeneration(keyValueStoreCommunication: KeyValueStoreCommunication,
   val stepPrepareFiles: ActorRef = context.actorOf(
     Props(new StepPrepareFiles(new FileSystemHelper(config))), "prepareFiles")
   val stepConvert: ActorRef = context.actorOf(
-    Props(new StepConvert(config)), "convert")
+    Props(new StepConvert(config, StepConvert.conversionTimeout(config, pluginSettings.timeoutDuration))), "convert")
   val stepFetchMergeResources: ActorRef = context.actorOf(
     Props(new StepFetchMergeResources(keyValueStoreCommunication, contentRepoCommunication)), "fetchMergeResources")
   val stepMerge: ActorRef = context.actorOf(Props[StepMerge], "merge")
