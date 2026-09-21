@@ -23,13 +23,9 @@ mkdir -p ${INSTALL_TARGET}/data/plugins/pdf/templates
 WKTOHTML_TARGET=/opt/wkhtmltox
 mv ${INSTALL_SRC}/wkhtmltox ${WKTOHTML_TARGET}
 
-# carry over some deprecated libs from debian:bullseye, which are no longer installable on debian:bookworm target platform
-ln -s /opt/wkhtmltox/libssl.so.1.1 /lib/x86_64-linux-gnu/
-ln -s /opt/wkhtmltox/libcrypto.so.1.1 /lib/x86_64-linux-gnu/
-
 
 # Legacy: provide reroute to wkhtmltopdf with patched qt
-ln -s $WKTOHTML_TARGET/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf-xvfb
+ln -s $WKTOHTML_TARGET/wkhtmltopdf /usr/local/bin/wkhtmltopdf-xvfb
 
 
 
