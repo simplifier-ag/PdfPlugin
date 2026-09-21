@@ -1,9 +1,9 @@
-FROM simplifierag/simplifier-assembly:main_0.1.0 AS build
+FROM simplifierag/simplifier-assembly:graal25_2.0.10 AS build
 WORKDIR /build
 COPY . /build/
 RUN sbt assembly
 
-FROM debian:bullseye-slim AS pdfplugin_builder
+FROM debian:bookworm-slim AS pdfplugin_builder
 RUN apt-get update && \
     apt-get upgrade -f -y && \
     apt-get install -y curl xfonts-base xfonts-75dpi fontconfig fontconfig-config fonts-dejavu-core libbsd0 libexpat1 \
@@ -12,8 +12,8 @@ RUN apt-get update && \
 RUN mkdir -p /opt/plugin
 
 #  download and install wkhtmltox tool
-RUN curl "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb" -L -o "/tmp/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb"
-RUN dpkg -i /tmp/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb
+RUN curl "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb" -L -o "/tmp/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb"
+RUN dpkg -i /tmp/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb
 
 #  provide plugin jar & config files
 COPY --from=this assets /opt/plugin/assets
@@ -24,8 +24,4 @@ FROM scratch
 COPY --from=pdfplugin_builder /opt/plugin /opt/plugin
 COPY --from=pdfplugin_builder /usr/local/bin/. /opt/plugin/wkhtmltox
 COPY --from=pdfplugin_builder /usr/local/lib/. /opt/plugin/wkhtmltox
-
-# carry over some deprecated libs from debian:bullseye, which are no longer installable on debian:bookworm target platform
-COPY --from=pdfplugin_builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /opt/plugin/wkhtmltox
-COPY --from=pdfplugin_builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 /opt/plugin/wkhtmltox
 
